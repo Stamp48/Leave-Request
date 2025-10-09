@@ -111,7 +111,7 @@ export const mockEmployees: EmployeeType[] = [
     avatarUrl: "/avatars/frank.jpg",
     hireDate: "2016-11-30",
     birthDate: "1987-03-19",
-    supervisorId: 1 // reports to Alice
+    supervisorId: undefined
   },
   {
     id: 7,

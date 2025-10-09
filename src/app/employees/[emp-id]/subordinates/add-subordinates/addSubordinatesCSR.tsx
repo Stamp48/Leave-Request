@@ -14,15 +14,15 @@ import { useRouter } from "next/navigation";
 
 
 
-export default function Addsubordinates({ initialRows, currEmployee }: { initialRows: EmployeeType[], currEmployee: EmployeeType | undefined }) {
+export default function Addsubordinates({ initialRows, currEmployee }: { initialRows: EmployeeType[], currEmployee: EmployeeType}) {
     const [searchText, setSearchText] = useState("");
     const [filter, setFilter] = useState("");
     const router = useRouter();
 
 
-    const subordinatesRows = initialRows.filter(e => e.supervisorId === currEmployee?.id);
+    const noSupInSameDepRows = initialRows.filter(e => e.department === currEmployee?.department && e.supervisorId === undefined && e.id !== currEmployee.id);
 
-    const filteredRows = subordinatesRows.filter((row) => {
+    const filteredRows = noSupInSameDepRows.filter((row) => {
         return Object.values(row).some(value =>
             value.toString().toLowerCase().includes(searchText.toLowerCase())
         );
@@ -50,7 +50,7 @@ export default function Addsubordinates({ initialRows, currEmployee }: { initial
             </Box>
 
             <Box sx={{ flex: 7, bgcolor: "secondary.main", display: "flex", alignItems: "flex-start", justifyContent: "center" }}>
-                <AddSubordinatesTable rows={filteredRows} />
+                <AddSubordinatesTable rows={filteredRows} currEmployee={currEmployee}/>
             </Box>
 
             <Box sx={{ flex: 1, bgcolor: "success.main", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>

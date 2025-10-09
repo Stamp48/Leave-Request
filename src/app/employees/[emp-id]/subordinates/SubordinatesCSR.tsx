@@ -51,7 +51,9 @@ export default function Subordinates({ initialRows, currEmployee }: { initialRow
       </Box>
 
       <Box sx={{ flex: 7, bgcolor: "secondary.main", display: "flex", alignItems: "flex-start", justifyContent: "center" }}>
+
         <SubordinatesTable rows={filteredRows} currEmployee={currEmployee}/>
+        
       </Box>
 
       <Box sx={{ flex: 1, bgcolor: "success.main", display: "flex", alignItems: "center", justifyContent: "center" }}>

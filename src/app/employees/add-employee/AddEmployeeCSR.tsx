@@ -55,7 +55,7 @@ export default function AddEmployee({ departmentData, existingEmployees }: { dep
 
   const [availableDivisions, setAvailableDivisions] = useState<string[]>([]);
 
-  const handleDepartmentChange = (e) => {
+  const handleDepartmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedDept = e.target.value;
     setFormData({
       ...formData,

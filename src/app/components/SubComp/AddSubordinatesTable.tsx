@@ -119,11 +119,9 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     );
 }
 
-interface EmployeesTableProps {
-    rows: EmployeeType[]; // <-- change from Data[] to Employee[]
-}
 
-export default function AddSubordinatesTable({ rows }: EmployeesTableProps) {
+
+export default function AddSubordinatesTable({ rows, currEmployee }: { rows: EmployeeType[], currEmployee: EmployeeType }) {
 
     const router = useRouter();
     const [selected, setSelected] = React.useState<readonly number[]>([]);
