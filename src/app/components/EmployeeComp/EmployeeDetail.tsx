@@ -7,7 +7,6 @@ import Button from "@mui/material/Button";
 import Detail from "../Detail";
 import Box from "@mui/material/Box";
 import CardHeader from '@mui/material/CardHeader';
-import EmployeeCard from "./EmployeeCard";
 import { EmployeeType } from "../../employees/page";
 import Avatar from "@mui/material/Avatar";
 import { useRouter } from "next/navigation";
@@ -52,6 +51,7 @@ export default function EmployeeDetail({ employee }: { employee: EmployeeType })
             <Detail label="Start Date" text={employee.hireDate} />
           </Box>
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
+            <Detail label="Address" text={employee.address} />
             <Detail label="Phone" text={employee.phone} />
           </Box>
 

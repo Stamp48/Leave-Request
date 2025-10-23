@@ -8,7 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Avatar from '@mui/material/Avatar';
-
+import { ReactNode } from 'react';
 import { useRouter } from "next/navigation";
 import { EmployeeType } from "@/app/employees/page";
 
@@ -33,13 +33,7 @@ const columns: readonly Column[] = [
 ];
 
 
-
-
-interface EmployeesTableProps {
-  rows: EmployeeType[]; // <-- change from Data[] to Employee[]
-}
-
-export default function EmployeesTable({ rows }: EmployeesTableProps) {
+export default function EmployeesTable({ rows }: { rows: EmployeeType[] }) {
   const router = useRouter();
 
   const [page, setPage] = useState(0);
@@ -54,6 +48,28 @@ export default function EmployeesTable({ rows }: EmployeesTableProps) {
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
+  };
+
+  /**
+   * Formats the cell value based on the column ID.
+   * This is much cleaner than putting logic in the render loop.
+   */
+  const formatValue = (column: Column, row: EmployeeType): ReactNode => {
+    // We pass the whole row in case we need to combine fields,
+    // like firstname and lastname.
+
+    switch (column.id) {
+      case 'avatarUrl':
+        return <Avatar src={row.avatarUrl} alt={`${row.firstname} ${row.lastname}`} />;
+
+      case 'firstname':
+        return `${row.firstname} ${row.lastname}`;
+
+      default:
+        // Default case just returns the value as-is.
+        // We cast to ReactNode to satisfy TypeScript.
+        return row[column.id] as ReactNode;
+    }
   };
 
   return (
@@ -79,16 +95,10 @@ export default function EmployeesTable({ rows }: EmployeesTableProps) {
                   sx={{ cursor: "pointer" }}
                   onClick={() => router.push(`/employees/${row.id}`)}>
                   {columns.map((column) => {
-                    const value = row[column.id];
+                    // This is now much simpler and more readable!
                     return (
                       <TableCell key={column.id} align={column.align}>
-                        {column.id === 'avatarUrl' ? (
-                          <Avatar src={row.avatarUrl} alt={`${row.firstname} ${row.lastname}`} />
-                        ) : column.id === 'firstname' ? (
-                          `${row.firstname} ${row.lastname}`
-                        ) : (
-                          value
-                        )}
+                        {formatValue(column, row)}
                       </TableCell>
                     );
                   })}

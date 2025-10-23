@@ -15,6 +15,8 @@ interface FormData {
   id: number;
   firstname: string;
   lastname: string;
+  username: string;
+  password: string;
   email: string;
   department: string;
   division: string;
@@ -44,6 +46,8 @@ export default function AddEmployee({ departmentData, existingEmployees }: { dep
     id: 0,
     firstname: "",
     lastname: "",
+    username: "",
+    password: "",
     email: "",
     department: "",
     division: "",
@@ -105,6 +109,7 @@ export default function AddEmployee({ departmentData, existingEmployees }: { dep
         password: password,
         hireDate: dayjs().toISOString(),
       };
+      setFormData(finalFormData);
 
       console.log("Submitted:", finalFormData);
       alert(`Employee added successfully on ${dayjs(finalFormData.hireDate).format("MMMM D, YYYY")}!`);

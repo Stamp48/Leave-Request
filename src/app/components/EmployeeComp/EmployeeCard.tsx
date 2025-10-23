@@ -1,7 +1,7 @@
 import Stack from "@mui/material/Stack";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import { EmployeeType } from "../employees/page";
+import { EmployeeType } from "@/app/lib/mockDataEmp";
 import { Box } from "@mui/material";
 
 export default function EmployeeCard({employee}: {employee: EmployeeType}) {
