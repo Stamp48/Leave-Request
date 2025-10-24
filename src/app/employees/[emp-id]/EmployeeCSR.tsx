@@ -9,11 +9,23 @@ import CardHeader from '@mui/material/CardHeader';
 import { useRouter } from "next/navigation";
 import { EmployeeType } from "../page";
 import Button from "@mui/material/Button";
+import { useState } from "react";
 
 
 
 export default function Employee({ employee, supervisor, isSupervisor }: { employee: EmployeeType, supervisor?: EmployeeType, isSupervisor: boolean }) {
     const router = useRouter();
+
+
+    const [open, setOpen] = useState(false);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     return (
 
@@ -23,8 +35,8 @@ export default function Employee({ employee, supervisor, isSupervisor }: { emplo
             </Typography>
 
             <Box sx={{ display: "grid", gridTemplateColumns: "7fr 3fr", gap: 2 }}>
-                <EmployeeDetail employee={employee} />
-                <EmployeeDetail employee={employee} />
+                <EmployeeDetail employee={employee} handleClickOpen={handleClickOpen} handleClose={handleClose} open={open} />
+                <EmployeeDetail employee={employee} handleClickOpen={handleClickOpen} handleClose={handleClose} open={open} />
             </Box>
             <Box
                 sx={{

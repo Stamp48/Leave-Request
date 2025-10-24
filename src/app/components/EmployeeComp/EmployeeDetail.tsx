@@ -12,12 +12,20 @@ import Avatar from "@mui/material/Avatar";
 import { useRouter } from "next/navigation";
 
 
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 
 
 
 
-export default function EmployeeDetail({ employee }: { employee: EmployeeType }) {
+
+
+
+export default function EmployeeDetail({ employee, handleClickOpen, handleClose, open }: { employee: EmployeeType, handleClickOpen?: () => void, handleClose?: () => void, open: boolean }) {
   const router = useRouter();
   return (
     <>
@@ -59,7 +67,34 @@ export default function EmployeeDetail({ employee }: { employee: EmployeeType })
         </CardContent>
         <CardActions>
           <Button size="small" onClick={() => router.push(`/employees/${employee.id}/edit`)}>Edit</Button>
-          <Button size="small">Delete</Button>
+          <React.Fragment>
+            <Button variant="outlined" onClick={handleClickOpen}>
+              Delete
+            </Button>
+            <Dialog
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">
+                {"Use Google's location service?"}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  Let Google help apps determine location. This means sending anonymous
+                  location data to Google, even when no apps are running.
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose}>Disagree</Button>
+                <Button onClick={handleClose} autoFocus>
+                  Agree
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </React.Fragment>
+
         </CardActions>
       </Card>
     </>
