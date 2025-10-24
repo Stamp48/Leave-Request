@@ -10,11 +10,10 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useState } from "react";
 import { ReactNode } from "react";
-import {calculateLeaveDuration} from "@/app/lib/utils";
 
 
 interface Column {
-    id: keyof LeaveRequestType | 'Duration';
+    id: keyof LeaveRequestType;
     label: string;
     minWidth?: number;
     align?: 'right';
@@ -60,6 +59,7 @@ export default function LeaveTable({ rows }: { rows: LeaveRequestType[] }) {
 
             case 'employeeFirstname':
                 return `${row.employeeFirstname} ${row.employeeLastname}`;
+
 
             default:
                 // Default case just returns the value as-is.
