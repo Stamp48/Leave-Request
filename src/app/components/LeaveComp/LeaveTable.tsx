@@ -28,7 +28,6 @@ const columns: readonly Column[] = [
     { id: 'leaveType', label: 'Leave Type', minWidth: 100 },
     { id: 'startDate', label: 'Start Date', minWidth: 100 },
     { id: 'endDate', label: 'End Date', minWidth: 100 },
-    { id: 'Duration', label: 'Duration', minWidth: 100 },
     { id: 'latestStatus', label: 'Status', minWidth: 100 },
 ];
 
@@ -61,8 +60,6 @@ export default function LeaveTable({ rows }: { rows: LeaveRequestType[] }) {
 
             case 'employeeFirstname':
                 return `${row.employeeFirstname} ${row.employeeLastname}`;
-            case 'Duration':
-                return calculateLeaveDuration(row);
 
             default:
                 // Default case just returns the value as-is.

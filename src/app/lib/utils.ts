@@ -3,6 +3,8 @@
 import { DepartmentType, DivisionType } from "./mockDataDepDiv";
 import { EmployeeType } from "./mockDataEmp";
 import { LeaveRequestType } from "./mockDataLeaveRequest";
+import { parseISO, startOfDay } from "date-fns";
+import { DateRange } from "react-day-picker";
 
 // Define a type for our final structured object for clarity
 export type DepartmentDataForClient = Record<string, string[]>;
@@ -131,5 +133,37 @@ export function calculateLeaveDuration(request: LeaveRequestType): number {
   }
 
   return totalDays;
+}
+
+
+
+export function filterRequestsByRange(
+  requests: LeaveRequestType[], 
+  dateRange: DateRange | undefined
+): LeaveRequestType[] {
+
+  // If no range is selected, return all requests.
+  if (!dateRange || !dateRange.from) {
+    return requests;
+  }
+
+  // Use startOfDay to ignore time and prevent timezone/comparison issues
+  const filterStart = startOfDay(dateRange.from);
+  
+  // Handle case where only a "from" date is selected
+  const filterEnd = dateRange.to ? startOfDay(dateRange.to) : filterStart;
+
+  return requests.filter(req => {
+    // parseISO correctly handles 'YYYY-MM-DD' strings
+    const reqStart = parseISO(req.startDate);
+    const reqEnd = parseISO(req.endDate);
+
+    // The logic for an overlap:
+    // Request ends after filter starts AND Request starts before filter ends
+    const isOverlapping = 
+      (reqEnd >= filterStart) && (reqStart <= filterEnd);
+    
+    return isOverlapping;
+  });
 }
 

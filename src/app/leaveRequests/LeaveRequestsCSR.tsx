@@ -53,7 +53,7 @@ export default function LeaveRequests({ initialRows }: { initialRows: LeaveReque
         </Box>
       </Box>
 
-      <Box sx={{ flex: 7, bgcolor: "secondary.main", display: "flex", alignItems: "flex-start", justifyContent: "center" }}>
+      <Box sx={{ flex: 7, bgcolor: "secondary.main", display: "flex", alignItems: "flex-start", justifyContent: "center", paddingX: "1rem"}}>
         <LeaveTable rows={filteredRows} />
       </Box>
 

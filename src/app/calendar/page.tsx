@@ -1,3 +1,6 @@
-export default function Calendar(){
-    return <h1>calendar</h1>
+import Calendar from "./CalendarCSR"
+import { mockLeaveRequests } from "../lib/mockDataLeaveRequest"
+
+export default function CalendarPage(){
+    return <Calendar initialRows={mockLeaveRequests}/>
 }

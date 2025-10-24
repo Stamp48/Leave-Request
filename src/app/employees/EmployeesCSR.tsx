@@ -71,7 +71,7 @@ export default function Employees({ initialRows }: { initialRows: EmployeeType[]
         </Box>
       </Box>
 
-      <Box sx={{ flex: 7, bgcolor: "secondary.main", display: "flex", alignItems: "flex-start", justifyContent: "center" }}>
+      <Box sx={{ flex: 7, bgcolor: "secondary.main", display: "flex", alignItems: "flex-start", justifyContent: "center", paddingX: "1rem"}}>
         <EmployeesTable rows={filteredRows} />
       </Box>
 
