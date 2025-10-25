@@ -38,9 +38,9 @@ const chartConfig = {
 
 export function ChartBarHorizontal() {
   return (
-    <Card>
+    <Card className="flex flex-col w-full max-w-sm h-[350px]">
       <CardHeader>
-        <CardTitle>Bar Chart - Horizontal</CardTitle>
+        <CardTitle>Division Leave Request</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent>
@@ -70,14 +70,7 @@ export function ChartBarHorizontal() {
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 leading-none font-medium">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="text-muted-foreground leading-none">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
+
     </Card>
   )
 }
