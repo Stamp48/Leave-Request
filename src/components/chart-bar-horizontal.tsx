@@ -1,13 +1,11 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
 import { Bar, BarChart, XAxis, YAxis } from "recharts"
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -20,57 +18,59 @@ import {
 
 export const description = "A horizontal bar chart"
 
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-]
+// 1. Define the data type this component expects
+type BarChartProps = {
+  data: {
+    department: string
+    total: number
+  }[]
+}
 
+// 2. Define the chart config for the new dataKey "total"
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  total: {
+    label: "Total",
     color: "var(--chart-1)",
   },
 } satisfies ChartConfig
 
-export function ChartBarHorizontal() {
+export function ChartBarHorizontal({ data }: BarChartProps) {
   return (
     <Card className="flex flex-col w-full max-w-sm h-[350px]">
       <CardHeader>
-        <CardTitle>Division Leave Request</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Department Leave Requests</CardTitle>
+        <CardDescription>Total requests by department</CardDescription>
       </CardHeader>
       <CardContent>
+        {/* 3. Use the "total" key in the config */}
         <ChartContainer config={chartConfig}>
           <BarChart
             accessibilityLayer
-            data={chartData}
+            data={data} // 4. Use the data prop here
             layout="vertical"
             margin={{
               left: -20,
             }}
           >
-            <XAxis type="number" dataKey="desktop" hide />
+            {/* 5. Use "total" as the dataKey */}
+            <XAxis type="number" dataKey="total" hide />
             <YAxis
-              dataKey="month"
+              dataKey="department" // 6. Use "department" as the dataKey
               type="category"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) => value.slice(0, 3)} // e.g., "Eng"
             />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={5} />
+            {/* 7. Use "total" as the dataKey and fill */}
+            <Bar dataKey="total" fill="var(--color-total)" radius={5} />
           </BarChart>
         </ChartContainer>
       </CardContent>
-
     </Card>
   )
 }

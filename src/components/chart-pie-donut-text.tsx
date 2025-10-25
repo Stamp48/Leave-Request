@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { TrendingUp } from "lucide-react"
 import { Label, Pie, PieChart } from "recharts"
 
 import {
@@ -21,54 +20,38 @@ import {
 
 export const description = "A donut chart with text"
 
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 190, fill: "var(--color-other)" },
-]
+// 1. Define the props interface
+interface ChartPieDonutTextProps {
+  data: any[]
+  config: ChartConfig
+  dataKey: string
+  nameKey: string
+  totalLabel: string
+}
 
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  chrome: {
-    label: "Chrome",
-    color: "var(--chart-1)",
-  },
-  safari: {
-    label: "Safari",
-    color: "var(--chart-2)",
-  },
-  firefox: {
-    label: "Firefox",
-    color: "var(--chart-3)",
-  },
-  edge: {
-    label: "Edge",
-    color: "var(--chart-4)",
-  },
-  other: {
-    label: "Other",
-    color: "var(--chart-5)",
-  },
-} satisfies ChartConfig
+export function ChartPieDonutText({
+  data,
+  config,
+  dataKey,
+  nameKey,
+  totalLabel,
+}: ChartPieDonutTextProps) {
 
-export function ChartPieDonutText() {
-  const totalVisitors = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
-  }, [])
+  // 2. Calculate the total dynamically from the data and dataKey
+  const total = React.useMemo(() => {
+    return data.reduce((acc, curr) => acc + curr[dataKey], 0)
+  }, [data, dataKey])
 
   return (
     <Card className="flex flex-col w-full max-w-sm h-[350px]">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Employees in Division</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        {/* 3. Update titles */}
+        <CardTitle>Employees by Department</CardTitle>
+        <CardDescription>Total company headcount</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
-          config={chartConfig}
+          config={config} // 4. Use config prop
           className="mx-auto aspect-square max-h-[250px]"
         >
           <PieChart>
@@ -77,9 +60,9 @@ export function ChartPieDonutText() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Pie
-              data={chartData}
-              dataKey="visitors"
-              nameKey="browser"
+              data={data} // 5. Use data prop
+              dataKey={dataKey} // 6. Use dataKey prop
+              nameKey={nameKey} // 7. Use nameKey prop
               innerRadius={60}
               strokeWidth={5}
             >
@@ -98,14 +81,16 @@ export function ChartPieDonutText() {
                           y={viewBox.cy}
                           className="fill-foreground text-3xl font-bold"
                         >
-                          {totalVisitors.toLocaleString()}
+                          {/* 8. Use dynamic total */}
+                          {total.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Visitors
+                          {/* 9. Use dynamic totalLabel */}
+                          {totalLabel}
                         </tspan>
                       </text>
                     )

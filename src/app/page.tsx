@@ -8,6 +8,6 @@ import { mockDepartments } from "./lib/mockDataDepDiv";
 
 export default function Home() {
   return (
-    <HomePage/>
+    <HomePage leaveRequests={mockLeaveRequests} employees={mockEmployees} departments={mockDepartments}/>
   );
   }
