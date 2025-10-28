@@ -33,7 +33,7 @@ const DEPARTMENT_COLORS = [
 ]
 
 export default function HomePage({leaveRequests, employees, departments} : {leaveRequests:LeaveRequestType[], employees:EmployeeType[], departments:DepartmentType[] }) {
-  const [timeRange, setTimeRange] = React.useState("90d")
+  const [timeRange, setTimeRange] = React.useState("7d")
 
   // --- Map for quick employee department lookups ---
   const employeeDeptMap = React.useMemo(() => {

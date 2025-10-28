@@ -9,6 +9,7 @@ export default function SubordinatesPage({ params }: { params: { "emp-id": strin
   if (!currEmployee) {
     return <div>Employee not found</div>;
   }
+  const initialRows = mockEmployees.filter(e => e.supervisorId === currEmployee?.id);
 
-  return <Subordinates initialRows={mockEmployees} currEmployee={currEmployee} />;
+  return <Subordinates initialRows={initialRows} currEmployee={currEmployee} />;
 }

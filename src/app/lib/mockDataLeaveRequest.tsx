@@ -5,6 +5,7 @@ export interface LeaveRequestType {
   employeePosition: string;
   employeeFirstname: string;
   employeeLastname: string;
+  employeeDepartment: string; // <-- Added field
   leaveType: string;
   startDate: string; // Using ISO string format (YYYY-MM-DD)
   endDate: string; // Using ISO string format (YYYY-MM-DD)
@@ -25,9 +26,10 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     employeeLastname: "Jackson",
     employeeAvatarUrl: "/avatars/leo.jpg",
     employeePosition: "QA Engineer",
+    employeeDepartment: "Engineering", // <-- Added
     leaveType: 'Annual',
-    startDate: '2025-11-03',
-    endDate: '2025-11-07',
+    startDate: '2025-09-03',
+    endDate: '2025-09-07',
     reason: 'Family vacation',
     latestStatus: 'Approved',
     rejectionReason: null,
@@ -43,9 +45,10 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     employeeLastname: "Martin",
     employeeAvatarUrl: "/avatars/oscar.jpg",
     employeePosition: "Mobile Developer",
+    employeeDepartment: "Engineering", // <-- Added
     leaveType: 'Sick',
-    startDate: '2025-11-05',
-    endDate: '2025-11-05',
+    startDate: '2025-09-05',
+    endDate: '2025-09-05',
     reason: 'Flu',
     latestStatus: 'Approved',
     rejectionReason: null,
@@ -61,9 +64,10 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     employeeLastname: "Thomas",
     employeeAvatarUrl: "/avatars/karen.jpg",
     employeePosition: "Finance Manager",
+    employeeDepartment: "Finance", // <-- Added
     leaveType: 'Personal',
-    startDate: '2025-11-10',
-    endDate: '2025-11-10',
+    startDate: '2025-09-10',
+    endDate: '2025-09-10',
     reason: 'Dentist appointment',
     latestStatus: 'Pending',
     rejectionReason: null,
@@ -79,9 +83,10 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     employeeLastname: "Williams",
     employeeAvatarUrl: "/avatars/charlie.jpg",
     employeePosition: "Content Strategist",
+    employeeDepartment: "Marketing", // <-- Added
     leaveType: 'Personal',
-    startDate: '2025-11-12',
-    endDate: '2025-11-12',
+    startDate: '2025-09-12',
+    endDate: '2025-09-12',
     reason: 'Parent-teacher meeting',
     latestStatus: 'Approved',
     rejectionReason: null,
@@ -97,9 +102,10 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     employeeLastname: "Jackson",
     employeeAvatarUrl: "/avatars/leo.jpg",
     employeePosition: "QA Engineer",
+    employeeDepartment: "Engineering", // <-- Added
     leaveType: 'Sick',
-    startDate: '2025-11-17',
-    endDate: '2025-11-19',
+    startDate: '2025-09-17',
+    endDate: '2025-09-19',
     reason: 'Food poisoning',
     latestStatus: 'Pending',
     rejectionReason: null,
@@ -115,9 +121,10 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     employeeLastname: "Harris",
     employeeAvatarUrl: "/avatars/nina.jpg",
     employeePosition: "Marketing Lead",
+    employeeDepartment: "Marketing", // <-- Added
     leaveType: 'Personal',
-    startDate: '2025-11-20',
-    endDate: '2025-11-20',
+    startDate: '2025-09-20',
+    endDate: '2025-09-20',
     reason: 'Concert',
     latestStatus: 'Rejected',
     rejectionReason: 'Non-essential travel during peak period.',
@@ -133,9 +140,10 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     employeeLastname: "Thomas",
     employeeAvatarUrl: "/avatars/karen.jpg",
     employeePosition: "Finance Manager",
+    employeeDepartment: "Finance", // <-- Added
     leaveType: 'Annual',
-    startDate: '2025-12-01',
-    endDate: '2025-12-05',
+    startDate: '2025-10-01',
+    endDate: '2025-10-05',
     reason: 'Trip to Japan',
     latestStatus: 'Approved',
     rejectionReason: null,
@@ -151,9 +159,10 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     employeeLastname: "Martin",
     employeeAvatarUrl: "/avatars/oscar.jpg",
     employeePosition: "Mobile Developer",
+    employeeDepartment: "Engineering", // <-- Added
     leaveType: 'Bereavement',
-    startDate: '2025-12-08',
-    endDate: '2025-12-10',
+    startDate: '2025-10-08',
+    endDate: '2025-10-10',
     reason: 'Funeral service',
     latestStatus: 'Approved',
     rejectionReason: null,
@@ -169,9 +178,10 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     employeeLastname: "White",
     employeeAvatarUrl: "/avatars/mona.jpg",
     employeePosition: "Training Coordinator",
+    employeeDepartment: "HR", // <-- Added
     leaveType: 'Annual',
-    startDate: '2025-12-15',
-    endDate: '2025-12-19',
+    startDate: '2025-10-15',
+    endDate: '2025-10-19',
     reason: 'Holiday leave',
     latestStatus: 'Pending',
     rejectionReason: null,
@@ -187,9 +197,10 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     employeeLastname: "Jackson",
     employeeAvatarUrl: "/avatars/leo.jpg",
     employeePosition: "QA Engineer",
+    employeeDepartment: "Engineering", // <-- Added
     leaveType: 'Annual',
-    startDate: '2025-12-22',
-    endDate: '2025-12-26',
+    startDate: '2025-10-22',
+    endDate: '2025-10-26',
     reason: 'Christmas holiday',
     latestStatus: 'Approved',
     rejectionReason: null,
@@ -205,9 +216,10 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     employeeLastname: "Anderson",
     employeeAvatarUrl: "/avatars/jack.jpg",
     employeePosition: "Sales Associate Lead",
+    employeeDepartment: "Sales", // <-- Added
     leaveType: 'Personal',
-    startDate: '2026-01-05',
-    endDate: '2026-01-07',
+    startDate: '2025-08-05',
+    endDate: '2025-08-07',
     reason: 'Moving house',
     latestStatus: 'Approved',
     rejectionReason: null,
@@ -223,9 +235,10 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     employeeLastname: "Brown",
     employeeAvatarUrl: "/avatars/david.jpg",
     employeePosition: "Sales Executive",
+    employeeDepartment: "Sales", // <-- Added
     leaveType: 'Unpaid',
-    startDate: '2026-01-12',
-    endDate: '2026-01-14',
+    startDate: '2025-08-12',
+    endDate: '2025-08-14',
     reason: 'Personal project',
     latestStatus: 'Rejected',
     rejectionReason: 'Insufficient notice provided.',
@@ -241,9 +254,10 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     employeeLastname: "Williams",
     employeeAvatarUrl: "/avatars/charlie.jpg",
     employeePosition: "Content Strategist",
+    employeeDepartment: "Marketing", // <-- Added
     leaveType: 'Annual',
-    startDate: '2026-01-19',
-    endDate: '2026-01-21',
+    startDate: '2025-08-19',
+    endDate: '2025-08-21',
     reason: 'Attending wedding',
     latestStatus: 'Approved',
     rejectionReason: null,
@@ -259,9 +273,10 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     employeeLastname: "Martin",
     employeeAvatarUrl: "/avatars/oscar.jpg",
     employeePosition: "Mobile Developer",
+    employeeDepartment: "Engineering", // <-- Added
     leaveType: 'Paternity',
-    startDate: '2026-01-26',
-    endDate: '2026-01-30',
+    startDate: '2025-08-26',
+    endDate: '2025-08-30',
     reason: 'Birth of child',
     latestStatus: 'Approved',
     rejectionReason: null,
@@ -277,9 +292,10 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     employeeLastname: "Johnson",
     employeeAvatarUrl: "/avatars/bob.jpg",
     employeePosition: "Senior Backend Engineer",
+    employeeDepartment: "Engineering", // <-- Added
     leaveType: 'Sick',
-    startDate: '2026-02-02',
-    endDate: '2026-02-04',
+    startDate: '2025-07-02',
+    endDate: '2025-07-04',
     reason: 'Migraine',
     latestStatus: 'Pending',
     rejectionReason: null,
@@ -289,4 +305,3 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     isLastHalfDay: true, 
   },
 ];
-

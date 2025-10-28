@@ -20,7 +20,7 @@ export default function Subordinates({ initialRows, currEmployee }: { initialRow
   const router = useRouter();
 
 
-  const subordinatesRows = initialRows.filter(e => e.supervisorId === currEmployee?.id);
+  const subordinatesRows = initialRows
 
   const filteredRows = subordinatesRows.filter((row) => {
     return Object.values(row).some(value =>

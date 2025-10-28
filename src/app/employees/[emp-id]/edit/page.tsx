@@ -5,7 +5,7 @@ import { mockDepartments, mockDivisions } from "@/app/lib/mockDataDepDiv";
 import { structureDataForClient } from "@/app/lib/utils";
 import { getSupervisorsByDepartment } from "@/app/lib/utils";
 
-export default function EmployeePage({ params }: { params: { "emp-id": string } }) {
+export default function EditEmployeePage({ params }: { params: { "emp-id": string } }) {
   const employee = mockEmployees.find(e => e.id.toString() === params["emp-id"]);
   const supervisor = employee?.supervisorId ? mockEmployees.find(e => e.id === employee.supervisorId) : null;
   const isSupervisor = mockEmployees.some(e => e.supervisorId === employee?.id);
