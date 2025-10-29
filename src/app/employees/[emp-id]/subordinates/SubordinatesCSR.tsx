@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 
 
 
-export default function Subordinates({ initialRows, currEmployee }: { initialRows: EmployeeType[], currEmployee: EmployeeType}) {
+export default function Subordinates({ initialRows, currEmployee }: { initialRows: EmployeeType[], currEmployee: EmployeeType }) {
   const [searchText, setSearchText] = useState("");
   const [filter, setFilter] = useState("");
   const router = useRouter();
@@ -42,6 +42,19 @@ export default function Subordinates({ initialRows, currEmployee }: { initialRow
         </Box>
         <Box sx={{ flex: 5, display: "flex", justifyContent: "flex-end" }}>
           {/* <Button sx={{ bgcolor: "white", mx: 0.5 }}>Sort</Button> */}
+          <FormControl sx={{ minWidth: 120 }}>
+            <InputLabel id="filter-label">Filter by</InputLabel>
+            <Select
+              labelId="filter-label"
+              sx={{ bgcolor: "white", mx: 0.5, minWidth: 120 }}
+              value={filter}
+              label="Filter by"
+            >
+              <MenuItem value="">None</MenuItem>
+              <MenuItem value={"name"}>Name</MenuItem>
+              <MenuItem value={"department"}>Department</MenuItem>
+            </Select>
+          </FormControl>
           <SearchBar
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -52,8 +65,8 @@ export default function Subordinates({ initialRows, currEmployee }: { initialRow
 
       <Box sx={{ flex: 7, bgcolor: "secondary.main", display: "flex", alignItems: "flex-start", justifyContent: "center" }}>
 
-        <SubordinatesTable rows={filteredRows} currEmployee={currEmployee}/>
-        
+        <SubordinatesTable rows={filteredRows} currEmployee={currEmployee} />
+
       </Box>
 
       <Box sx={{ flex: 1, bgcolor: "success.main", display: "flex", alignItems: "center", justifyContent: "center" }}>

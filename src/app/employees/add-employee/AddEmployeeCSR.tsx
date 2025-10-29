@@ -39,9 +39,9 @@ function generateRandomPassword(length = 12) {
 }
 
 export default function AddEmployee({ departmentData, existingEmployees }: { departmentData: Record<string, string[]>, existingEmployees: EmployeeType[] }) {
-  
+
   const router = useRouter();
-  
+
   const [formData, setFormData] = useState<FormData>({
     id: 0,
     firstname: "",
@@ -169,9 +169,9 @@ export default function AddEmployee({ departmentData, existingEmployees }: { dep
         required
         label="Department"
         name="department"
-        value={formData.department} 
-        onChange={handleDepartmentChange} 
-        fullWidth 
+        value={formData.department}
+        onChange={handleDepartmentChange}
+        fullWidth
         error={!!errors.department}
         helperText={errors.department || "Please select a department"}
       >
@@ -187,10 +187,10 @@ export default function AddEmployee({ departmentData, existingEmployees }: { dep
         required
         label="Division"
         name="division"
-        value={formData.division} 
-        onChange={handleChange}  
+        value={formData.division}
+        onChange={handleChange}
         error={!!errors.division}
-    
+
 
         disabled={!formData.department}
 
@@ -201,6 +201,24 @@ export default function AddEmployee({ departmentData, existingEmployees }: { dep
         {availableDivisions.map((divisionName) => (
           <MenuItem key={divisionName} value={divisionName}>
             {divisionName}
+          </MenuItem>
+        ))}
+      </TextField>
+
+      <TextField
+        select
+        required
+        label="Position"
+        name="position"
+        value={formData.department}
+        onChange={handleDepartmentChange}
+        fullWidth
+        error={!!errors.department}
+        helperText={errors.department || "Please select a department"}
+      >
+        {Object.keys(departmentData).map((departmentName) => (
+          <MenuItem key={departmentName} value={departmentName}>
+            {departmentName}
           </MenuItem>
         ))}
       </TextField>

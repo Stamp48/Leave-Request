@@ -62,6 +62,20 @@ export default function Employees({ initialRows }: { initialRows: EmployeeType[]
               <MenuItem value={"department"}>Department</MenuItem>
             </Select>
           </FormControl>
+          <FormControl sx={{ minWidth: 120 }}>
+            <InputLabel id="filter-label">Filter by</InputLabel>
+            <Select
+              labelId="filter-label"
+              sx={{ bgcolor: "white", mx: 0.5, minWidth: 120 }}
+              value={filter}
+              label="Filter by"
+              onChange={handleFilterChange}
+            >
+              <MenuItem value="">None</MenuItem>
+              <MenuItem value={"name"}>Name</MenuItem>
+              <MenuItem value={"department"}>Department</MenuItem>
+            </Select>
+          </FormControl>
           {/* <Button sx={{ bgcolor: "white", mx: 0.5 }}>Sort</Button> */}
           <SearchBar
             value={searchText}
