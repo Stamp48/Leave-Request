@@ -26,7 +26,6 @@ interface Column {
 const columns: readonly Column[] = [
   { id: 'avatarUrl', label: 'Profile', minWidth: 100 },
   { id: 'firstname', label: 'Full Name', minWidth: 170 },
-  { id: 'username', label: 'Username', minWidth: 150 },
   { id: 'email', label: 'Email', minWidth: 200 },
   { id: 'department', label: 'Department', minWidth: 150 },
   { id: 'division', label: 'Division', minWidth: 150 },

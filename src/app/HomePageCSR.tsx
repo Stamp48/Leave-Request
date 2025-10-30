@@ -160,7 +160,7 @@ export default function HomePage({leaveRequests, employees, departments} : {leav
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", marginBottom: "100px" }}>
       {/* --- Cards --- */}
-      <Box sx={{ flex: 3, bgcolor: "primary.main", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, paddingY: "5px" }}>
+      <Box sx={{ flex: 3, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, paddingY: "5px" }}>
         {/* ... (DashCard components) ... */}
         <DashCard title="Total" value={dashboardCounts.total} />
         <DashCard title="Pending" value={dashboardCounts.pending} />
@@ -169,7 +169,7 @@ export default function HomePage({leaveRequests, employees, departments} : {leav
       </Box>
 
       {/* --- Area Chart --- */}
-      <Box sx={{ flex: 6, bgcolor: "secondary.main", paddingX: "25px", paddingY: "10px" }}>
+      <Box sx={{ flex: 6, paddingX: "25px", paddingY: "10px" }}>
         {/* ... (ChartAreaInteractive component) ... */}
          <ChartAreaInteractive
           data={areaChartData}
@@ -181,7 +181,7 @@ export default function HomePage({leaveRequests, employees, departments} : {leav
       </Box>
 
       {/* --- Bar & Pie Charts --- */}
-      <Box sx={{ flex: 3, bgcolor: "success.main", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, paddingX: "30px", paddingY: "10px" }}>
+      <Box sx={{ flex: 3, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, paddingX: "30px", paddingY: "10px" }}>
         <ChartBarHorizontal data={departmentChartData} />
         
         {/* --- 2. Pass new props to Donut Chart --- */}

@@ -11,7 +11,7 @@ export default function LeaveRequest({ leaveRequest }: { leaveRequest: LeaveRequ
 
     return (
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 4, padding: 4, backgroundColor: "#1976d2" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 4, padding: 4, backgroundColor: "#1976d2", borderRadius:"25px" }}>
             <Typography variant="h3" color="white">
                 Leave Request Detail
             </Typography>

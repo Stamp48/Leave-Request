@@ -29,7 +29,7 @@ export default function Employee({ employee, supervisor, isSupervisor }: { emplo
 
     return (
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 4, padding: 4, backgroundColor: "#1976d2" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 4, padding: 4, backgroundColor: "#1976d2", borderRadius:"16px" }}>
             <Typography variant="h3" color="white">
                 Employee Detail
             </Typography>

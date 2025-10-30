@@ -31,13 +31,13 @@ export default function Subordinates({ initialRows, currEmployee }: { initialRow
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", marginBottom: "100px" }}>
-      <Box sx={{ flex: 1, bgcolor: "primary.main", display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
-        <Typography variant="h3" color="white">
+      <Box sx={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
+        <Typography variant="h3" color="primary.main">
           Subordinate Management
         </Typography>
       </Box>
 
-      <Box sx={{ flex: 1, bgcolor: "#f8bbd0", display: "flex", alignItems: "center" }}>
+      <Box sx={{ flex: 1, display: "flex", alignItems: "center" }}>
         <Box sx={{ flex: 5, display: "flex", justifyContent: "flex-start" }}>
         </Box>
         <Box sx={{ flex: 5, display: "flex", justifyContent: "flex-end" }}>
@@ -63,15 +63,13 @@ export default function Subordinates({ initialRows, currEmployee }: { initialRow
         </Box>
       </Box>
 
-      <Box sx={{ flex: 7, bgcolor: "secondary.main", display: "flex", alignItems: "flex-start", justifyContent: "center" }}>
+      <Box sx={{ flex: 7, display: "flex", alignItems: "flex-start", justifyContent: "center" }}>
 
         <SubordinatesTable rows={filteredRows} currEmployee={currEmployee} />
 
       </Box>
 
-      <Box sx={{ flex: 1, bgcolor: "success.main", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        yoo
-      </Box>
+
     </Box>
   );
 }

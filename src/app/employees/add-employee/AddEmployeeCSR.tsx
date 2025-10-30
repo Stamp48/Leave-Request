@@ -9,6 +9,7 @@ import { DepartmentType, DivisionType } from "@/app/lib/mockDataDepDiv";
 import MenuItem from '@mui/material/MenuItem';
 import { EmployeeType } from "@/app/lib/mockDataEmp";
 import { useRouter } from "next/navigation";
+import Typography from "@mui/material/Typography";
 
 
 interface FormData {
@@ -123,135 +124,153 @@ export default function AddEmployee({ departmentData, existingEmployees }: { dep
 
   return (
     <Box
-      component="form"
-      onSubmit={handleSubmit}
       sx={{
         display: "flex",
-        flexDirection: "column",
-        gap: 2,
-        width: 300,
+        flexDirection: "column", // Stacks children vertically
       }}
     >
-      <TextField
-        required
-        label="Firstname"
-        name="firstname"
-        value={formData.firstname}
-        onChange={handleChange}
-        variant="outlined"
-        error={!!errors.firstname}
-        helperText={errors.firstname || ""}
-      />
-      <TextField
-        required
-        label="Lastname"
-        name="lastname"
-        value={formData.lastname}
-        onChange={handleChange}
-        error={!!errors.lastname}
-        helperText={errors.lastname || ""}
-        variant="outlined"
-      />
-      <TextField
-        required
-        label="Email"
-        name="email"
-        type="email"
-        value={formData.email}
-        onChange={handleChange}
-        variant="outlined"
-        error={!!errors.email}
-        helperText={errors.email || ""}
-      />
 
-      <TextField
-        select
-        required
-        label="Department"
-        name="department"
-        value={formData.department}
-        onChange={handleDepartmentChange}
-        fullWidth
-        error={!!errors.department}
-        helperText={errors.department || "Please select a department"}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexGrow: 1,
+          paddingTop:"25px",
+        }}
       >
-        {Object.keys(departmentData).map((departmentName) => (
-          <MenuItem key={departmentName} value={departmentName}>
-            {departmentName}
-          </MenuItem>
-        ))}
-      </TextField>
-
-      <TextField
-        select
-        required
-        label="Division"
-        name="division"
-        value={formData.division}
-        onChange={handleChange}
-        error={!!errors.division}
-
-
-        disabled={!formData.department}
-
-        helperText={!formData.department ? "Please select a department first" : "Please select a division"}
-        fullWidth
-      >
-
-        {availableDivisions.map((divisionName) => (
-          <MenuItem key={divisionName} value={divisionName}>
-            {divisionName}
-          </MenuItem>
-        ))}
-      </TextField>
-
-      <TextField
-        select
-        required
-        label="Position"
-        name="position"
-        value={formData.department}
-        onChange={handleDepartmentChange}
-        fullWidth
-        error={!!errors.department}
-        helperText={errors.department || "Please select a department"}
-      >
-        {Object.keys(departmentData).map((departmentName) => (
-          <MenuItem key={departmentName} value={departmentName}>
-            {departmentName}
-          </MenuItem>
-        ))}
-      </TextField>
-
-
-      <TextField
-        label="Phone"
-        name="phone"
-        type="tel"
-        value={formData.phone}
-        onChange={handleChange}
-        variant="outlined"
-      />
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker
-          label="Birth Date"
-          name="birthDate"
-          value={formData.birthDate ? dayjs(formData.birthDate) : null}
-          onChange={(newValue) => {
-            setFormData({ ...formData, birthDate: newValue ? newValue.toISOString() : "" });
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            width: 320,
           }}
-          slotProps={{
-            textField: {
-              required: true,
-              error: Boolean(errors.birthDate),
-              helperText: errors.birthDate ? errors.birthDate : ""
-            },
-          }}
-        />
-      </LocalizationProvider>
-      <Button type="submit" variant="contained">
-        Submit
-      </Button>
+        >
+          <TextField
+            required
+            label="Firstname"
+            name="firstname"
+            value={formData.firstname}
+            onChange={handleChange}
+            variant="outlined"
+            error={!!errors.firstname}
+            helperText={errors.firstname || ""}
+          />
+          <TextField
+            required
+            label="Lastname"
+            name="lastname"
+            value={formData.lastname}
+            onChange={handleChange}
+            error={!!errors.lastname}
+            helperText={errors.lastname || ""}
+            variant="outlined"
+          />
+          <TextField
+            required
+            label="Email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            variant="outlined"
+            error={!!errors.email}
+            helperText={errors.email || ""}
+          />
+
+          <TextField
+            select
+            required
+            label="Department"
+            name="department"
+            value={formData.department}
+            onChange={handleDepartmentChange}
+            fullWidth
+            error={!!errors.department}
+            helperText={errors.department || "Please select a department"}
+          >
+            {Object.keys(departmentData).map((departmentName) => (
+              <MenuItem key={departmentName} value={departmentName}>
+                {departmentName}
+              </MenuItem>
+            ))}
+          </TextField>
+
+          <TextField
+            select
+            required
+            label="Division"
+            name="division"
+            value={formData.division}
+            onChange={handleChange}
+            error={!!errors.division}
+
+
+            disabled={!formData.department}
+
+            helperText={!formData.department ? "Please select a department first" : "Please select a division"}
+            fullWidth
+          >
+
+            {availableDivisions.map((divisionName) => (
+              <MenuItem key={divisionName} value={divisionName}>
+                {divisionName}
+              </MenuItem>
+            ))}
+          </TextField>
+
+          <TextField
+            select
+            required
+            label="Position"
+            name="position"
+            value={formData.department}
+            onChange={handleDepartmentChange}
+            fullWidth
+            error={!!errors.department}
+            helperText={errors.department || "Please select a department"}
+          >
+            {Object.keys(departmentData).map((departmentName) => (
+              <MenuItem key={departmentName} value={departmentName}>
+                {departmentName}
+              </MenuItem>
+            ))}
+          </TextField>
+
+
+          <TextField
+            label="Phone"
+            name="phone"
+            type="tel"
+            value={formData.phone}
+            onChange={handleChange}
+            variant="outlined"
+          />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Birth Date"
+              name="birthDate"
+              value={formData.birthDate ? dayjs(formData.birthDate) : null}
+              onChange={(newValue) => {
+                setFormData({ ...formData, birthDate: newValue ? newValue.toISOString() : "" });
+              }}
+              slotProps={{
+                textField: {
+                  required: true,
+                  error: Boolean(errors.birthDate),
+                  helperText: errors.birthDate ? errors.birthDate : ""
+                },
+              }}
+            />
+          </LocalizationProvider>
+          <Button type="submit" variant="contained">
+            Submit
+          </Button>
+        </Box>
+      </Box>
     </Box>
   );
 }

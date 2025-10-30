@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 
 
 
-export default function Addsubordinates({ initialRows, currEmployee }: { initialRows: EmployeeType[], currEmployee: EmployeeType}) {
+export default function Addsubordinates({ initialRows, currEmployee }: { initialRows: EmployeeType[], currEmployee: EmployeeType }) {
     const [searchText, setSearchText] = useState("");
     const [filter, setFilter] = useState("");
     const router = useRouter();
@@ -31,13 +31,13 @@ export default function Addsubordinates({ initialRows, currEmployee }: { initial
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", marginBottom: "100px" }}>
-            <Box sx={{ flex: 1, bgcolor: "primary.main", display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
-                <Typography variant="h3" color="white">
+            <Box sx={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
+                <Typography variant="h3" color="primary.main">
                     Add Subordinate
                 </Typography>
             </Box>
 
-            <Box sx={{ flex: 1, bgcolor: "#f8bbd0", display: "flex", alignItems: "center" }}>
+            <Box sx={{ flex: 1, display: "flex", alignItems: "center" }}>
 
                 <Box sx={{ flex: 5, display: "flex", justifyContent: "flex-end" }}>
                     {/* <Button sx={{ bgcolor: "white", mx: 0.5 }}>Sort</Button> */}
@@ -49,12 +49,9 @@ export default function Addsubordinates({ initialRows, currEmployee }: { initial
                 </Box>
             </Box>
 
-            <Box sx={{ flex: 7, bgcolor: "secondary.main", display: "flex", alignItems: "flex-start", justifyContent: "center" }}>
-                <AddSubordinatesTable rows={filteredRows} currEmployee={currEmployee}/>
-            </Box>
-
-            <Box sx={{ flex: 1, bgcolor: "success.main", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
-                <Button sx={{bgcolor:"white"}}>Add</Button>
+            <Box sx={{ flex: 7, display: "flex", alignItems: "flex-end",flexDirection:"column" }}>
+                <AddSubordinatesTable rows={filteredRows} currEmployee={currEmployee} />
+                <Button sx={{ bgcolor: "yello" }}>Add</Button>
 
             </Box>
         </Box>

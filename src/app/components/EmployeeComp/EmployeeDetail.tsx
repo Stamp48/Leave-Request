@@ -66,11 +66,13 @@ export default function EmployeeDetail({ employee, handleClickOpen, handleClose,
 
         </CardContent>
         <CardActions>
-          <Button size="small" onClick={() => router.push(`/employees/${employee.id}/edit`)}>Edit</Button>
+          <Box sx={{paddingLeft:"25px"}}>
+          <Button variant="outlined" size="small" sx={{marginRight:"7.5px"}} onClick={() => router.push(`/employees/${employee.id}/edit`)}>Edit</Button>
           <React.Fragment>
-            <Button variant="outlined" onClick={handleClickOpen}>
+            <Button variant="outlined" size="small" onClick={handleClickOpen}>
               Delete
             </Button>
+            
             <Dialog
               open={open}
               onClose={handleClose}
@@ -94,6 +96,7 @@ export default function EmployeeDetail({ employee, handleClickOpen, handleClose,
               </DialogActions>
             </Dialog>
           </React.Fragment>
+          </Box>
 
         </CardActions>
       </Card>
