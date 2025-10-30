@@ -28,8 +28,8 @@ export const mockLeaveRequests: LeaveRequestType[] = [
     employeePosition: "QA Engineer",
     employeeDepartment: "Engineering", // <-- Added
     leaveType: 'Annual',
-    startDate: '2025-09-03',
-    endDate: '2025-09-07',
+    startDate: '2025-11-03',
+    endDate: '2025-11-07',
     reason: 'Family vacation',
     latestStatus: 'Approved',
     rejectionReason: null,
