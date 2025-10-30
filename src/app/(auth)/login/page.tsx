@@ -1,8 +1,11 @@
-import Login from "./LoginCSR";
+import { LoginForm } from "@/components/login-form"
 
-export default function LoginPage() {
+export default function Page() {
   return (
-    // FIX: Apply your login-specific layout here
-      <Login />
-  );
+    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+      <div className="w-full max-w-sm">
+        <LoginForm />
+      </div>
+    </div>
+  )
 }
