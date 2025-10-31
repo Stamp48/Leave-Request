@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 import { parseISO, startOfDay } from "date-fns";
 import { useState } from "react";
 import * as React from "react";
+import { StatusHistoryType } from "@/app/lib/mockStatusHistory"
+import LeaveHistory from "@/app/components/LeaveComp/LeaveHistory";
 
 
 import Dialog from '@mui/material/Dialog';
@@ -17,7 +19,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 
-export default function LeaveRequest({ leaveRequest }: { leaveRequest: LeaveRequestType }) {
+export default function LeaveRequest({ leaveRequest, history }: { leaveRequest: LeaveRequestType, history: StatusHistoryType[] }) {
     const router = useRouter();
 
     const today = startOfDay(new Date());
@@ -87,7 +89,7 @@ export default function LeaveRequest({ leaveRequest }: { leaveRequest: LeaveRequ
 
                         {leaveRequest.latestStatus === "Rejected" && (
                             <Box sx={{ display: "grid", gridTemplateColumns: "1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
-                                <Detail label="Admin's Comment" text={leaveRequest.rejectionReason || "N/A"} />
+                                <Detail label="Supervisor's Reason" text={leaveRequest.rejectionReason || "N/A"} />
                             </Box>
                         )}
 
@@ -127,6 +129,7 @@ export default function LeaveRequest({ leaveRequest }: { leaveRequest: LeaveRequ
 
                     </CardContent>
                 </Card>
+                <LeaveHistory history={history} />
             </Box>
 
 

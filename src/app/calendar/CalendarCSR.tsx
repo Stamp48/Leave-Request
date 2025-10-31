@@ -46,7 +46,7 @@ export default function Calendar({ initialRows }: { initialRows: LeaveRequestTyp
                     className="rounded-lg border"
                 />
 
-                <Typography variant="body1" color="white" sx={{ mt: 2, p: 1, bgcolor: 'rgba(0,0,0,0.7)', borderRadius: 1 }}>
+                <Typography variant="body1" color="white" sx={{ mt: 2, p: 1, bgcolor: 'rgba(6, 90, 200, 0.7)', borderRadius: 1 }}>
                     Selected range: {" "}
                     {date?.from ? format(date.from, "PPP") : "Start Date"} -{" "}
                     {date?.to ? format(date.to, "PPP") : "End Date"}

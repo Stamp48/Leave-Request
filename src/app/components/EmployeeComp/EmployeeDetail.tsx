@@ -25,7 +25,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 
 
-export default function EmployeeDetail({ employee, handleClickOpen, handleClose, open }: { employee: EmployeeType, handleClickOpen?: () => void, handleClose?: () => void, open: boolean }) {
+export default function EmployeeDetail({ employee, handleClickOpen, handleClose, open }: { employee: EmployeeType,handleClickOpen?: () => void, handleClose?: () => void, open: boolean }) {
   const router = useRouter();
   return (
     <>

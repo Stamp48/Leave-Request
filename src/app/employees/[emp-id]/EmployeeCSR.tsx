@@ -10,10 +10,12 @@ import { useRouter } from "next/navigation";
 import { EmployeeType } from "../page";
 import Button from "@mui/material/Button";
 import { useState } from "react";
+import {StatusHistoryType} from "@/app/lib/mockStatusHistory"
+import LeaveCard from "@/app/components/LeaveComp/LeaveCard";
 
 
 
-export default function Employee({ employee, supervisor, isSupervisor }: { employee: EmployeeType, supervisor?: EmployeeType, isSupervisor: boolean }) {
+export default function Employee({ employee, supervisor, isSupervisor, leaveHistory }: { employee: EmployeeType, supervisor?: EmployeeType, isSupervisor: boolean, leaveHistory:StatusHistoryType[] }) {
     const router = useRouter();
 
 
@@ -36,7 +38,8 @@ export default function Employee({ employee, supervisor, isSupervisor }: { emplo
 
             <Box sx={{ display: "grid", gridTemplateColumns: "7fr 3fr", gap: 2 }}>
                 <EmployeeDetail employee={employee} handleClickOpen={handleClickOpen} handleClose={handleClose} open={open} />
-                <EmployeeDetail employee={employee} handleClickOpen={handleClickOpen} handleClose={handleClose} open={open} />
+                
+                <LeaveCard leaveHistory={leaveHistory}/>
             </Box>
             <Box
                 sx={{
