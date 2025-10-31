@@ -24,7 +24,7 @@ interface Column {
 const columns: readonly Column[] = [
     { id: 'requestId', label: 'Request ID', minWidth: 50 },
     { id: 'employeeFirstname', label: 'Employee', minWidth: 150 }, 
-    { id: 'employeeDepartment', label: 'Department', minWidth: 150},
+    { id: 'employeeDepartment', label: 'Division', minWidth: 150},
     { id: 'leaveType', label: 'Leave Type', minWidth: 100 },
     { id: 'startDate', label: 'Start Date', minWidth: 100 },
     { id: 'endDate', label: 'End Date', minWidth: 100 },

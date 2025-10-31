@@ -40,7 +40,6 @@ export default function Sidebar() {
                     p:2
                  }}
             >
-                <AdbIcon sx={{ mr: 1 }} />
                 <Typography
                     variant="h6"
                     noWrap
@@ -56,7 +55,7 @@ export default function Sidebar() {
                         textDecoration: 'none',
                     }}
                 >
-                    LOGO
+                    LEAVE
                 </Typography>
             </Box>
             <Box

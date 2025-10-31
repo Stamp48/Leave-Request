@@ -14,7 +14,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 
-const settings = ['Profile', 'Logout'];
+const settings = ['Logout'];
 
 export default function NavBar() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);

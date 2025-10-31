@@ -25,7 +25,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 
 
-export default function EmployeeDetail({ employee, handleClickOpen, handleClose, open }: { employee: EmployeeType,handleClickOpen?: () => void, handleClose?: () => void, open: boolean }) {
+export default function EmployeeDetail({ employee, handleClickOpen, handleClose, open }: { employee: EmployeeType, handleClickOpen?: () => void, handleClose?: () => void, open: boolean }) {
   const router = useRouter();
   return (
     <>
@@ -51,8 +51,8 @@ export default function EmployeeDetail({ employee, handleClickOpen, handleClose,
             <Detail label="Email" text={employee.email} />
           </Box>
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
-            <Detail label="Department" text={employee.department} />
-            <Detail label="Division" text={employee.division} />
+            <Detail label="Division" text={employee.department} />
+            <Detail label="Department" text={employee.division} />
           </Box>
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
             <Detail label="Date of Birth" text={employee.birthDate} />
@@ -66,36 +66,36 @@ export default function EmployeeDetail({ employee, handleClickOpen, handleClose,
 
         </CardContent>
         <CardActions>
-          <Box sx={{paddingLeft:"25px"}}>
-          <Button variant="outlined" size="small" sx={{marginRight:"7.5px"}} onClick={() => router.push(`/employees/${employee.id}/edit`)}>Edit</Button>
-          <React.Fragment>
-            <Button variant="outlined" size="small" onClick={handleClickOpen}>
-              Delete
-            </Button>
-            
-            <Dialog
-              open={open}
-              onClose={handleClose}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title">
-                {"Use Google's location service?"}
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                  Let Google help apps determine location. This means sending anonymous
-                  location data to Google, even when no apps are running.
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleClose}>Disagree</Button>
-                <Button onClick={handleClose} autoFocus>
-                  Agree
-                </Button>
-              </DialogActions>
-            </Dialog>
-          </React.Fragment>
+          <Box sx={{ paddingLeft: "25px" }}>
+            <Button variant="outlined" size="small" sx={{ marginRight: "7.5px" }} onClick={() => router.push(`/employees/${employee.id}/edit`)}>Edit</Button>
+            <React.Fragment>
+              <Button variant="outlined" color="error" size="small" onClick={handleClickOpen}>
+                Delete
+              </Button>
+
+              <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle id="alert-dialog-title">
+                  {"Use Google's location service?"}
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                    Let Google help apps determine location. This means sending anonymous
+                    location data to Google, even when no apps are running.
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleClose}>Disagree</Button>
+                  <Button onClick={handleClose} autoFocus>
+                    Agree
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </React.Fragment>
           </Box>
 
         </CardActions>

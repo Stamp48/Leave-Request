@@ -49,10 +49,9 @@ export default function Addsubordinates({ initialRows, currEmployee }: { initial
                 </Box>
             </Box>
 
-            <Box sx={{ flex: 7, display: "flex", alignItems: "flex-end",flexDirection:"column" }}>
+            <Box sx={{ flex: 7, display: "flex", alignItems: "flex-end", flexDirection: "column" }}>
                 <AddSubordinatesTable rows={filteredRows} currEmployee={currEmployee} />
-                <Button sx={{ bgcolor: "yello" }}>Add</Button>
-
+                <Button variant="contained">Add</Button>
             </Box>
         </Box>
     );

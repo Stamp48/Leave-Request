@@ -45,16 +45,16 @@ export default function Employees({ initialRows }: { initialRows: EmployeeType[]
 
       <Box sx={{ flex: 1, display: "flex", alignItems: "center" }}>
         <Box sx={{ flex: 5, display: "flex", justifyContent: "flex-start" }}>
-          <Button onClick={() => router.push("/employees/add-employee")} sx={{ bgcolor: "white", mx: 0.5 }}>Add</Button>
+          <Button variant="contained" onClick={() => router.push("/employees/add-employee")} sx={{ mx: 2 }}>Add</Button>
         </Box>
         <Box sx={{ flex: 5, display: "flex", justifyContent: "flex-end" }}>
           <FormControl sx={{ minWidth: 120 }}>
-            <InputLabel id="filter-label">Filter by</InputLabel>
+            <InputLabel id="filter-label">Filter by Division</InputLabel>
             <Select
               labelId="filter-label"
               sx={{ bgcolor: "white", mx: 0.5, minWidth: 120 }}
               value={filter}
-              label="Filter by"
+              label="Filter by Division"
               onChange={handleFilterChange}
             >
               <MenuItem value="">None</MenuItem>
@@ -63,12 +63,12 @@ export default function Employees({ initialRows }: { initialRows: EmployeeType[]
             </Select>
           </FormControl>
           <FormControl sx={{ minWidth: 120 }}>
-            <InputLabel id="filter-label">Filter by</InputLabel>
+            <InputLabel id="filter-label">Filter by Department</InputLabel>
             <Select
               labelId="filter-label"
               sx={{ bgcolor: "white", mx: 0.5, minWidth: 120 }}
               value={filter}
-              label="Filter by"
+              label="Filter by Department"
               onChange={handleFilterChange}
             >
               <MenuItem value="">None</MenuItem>

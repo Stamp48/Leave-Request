@@ -27,8 +27,8 @@ const columns: readonly Column[] = [
   { id: 'avatarUrl', label: 'Profile', minWidth: 100 },
   { id: 'firstname', label: 'Full Name', minWidth: 170 },
   { id: 'email', label: 'Email', minWidth: 200 },
-  { id: 'department', label: 'Department', minWidth: 150 },
-  { id: 'division', label: 'Division', minWidth: 150 },
+  { id: 'department', label: 'Division', minWidth: 150 },
+  { id: 'division', label: 'Department', minWidth: 150 },
 ];
 
 

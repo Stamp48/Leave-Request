@@ -184,13 +184,13 @@ export default function AddEmployee({ departmentData, existingEmployees }: { dep
           <TextField
             select
             required
-            label="Department"
+            label="Division"
             name="department"
             value={formData.department}
             onChange={handleDepartmentChange}
             fullWidth
             error={!!errors.department}
-            helperText={errors.department || "Please select a department"}
+            helperText={errors.department || "Please select a division"}
           >
             {Object.keys(departmentData).map((departmentName) => (
               <MenuItem key={departmentName} value={departmentName}>
@@ -202,7 +202,7 @@ export default function AddEmployee({ departmentData, existingEmployees }: { dep
           <TextField
             select
             required
-            label="Division"
+            label="Department"
             name="division"
             value={formData.division}
             onChange={handleChange}
@@ -211,7 +211,7 @@ export default function AddEmployee({ departmentData, existingEmployees }: { dep
 
             disabled={!formData.department}
 
-            helperText={!formData.department ? "Please select a department first" : "Please select a division"}
+            helperText={!formData.department ? "Please select a division first" : "Please select a department"}
             fullWidth
           >
 
