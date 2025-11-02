@@ -59,7 +59,7 @@ export default function LeaveTable({ rows }: { rows: LeaveRequestType[] }) {
         switch (column.id) {
 
             case 'employeeFirstname':
-                return `${row.employeeFirstname} ${row.employeeLastname}`;
+                return `${row.employee_first_name} ${row.employee_last_name}`;
 
 
             default:

@@ -27,7 +27,7 @@ export default function LeaveRequest({ leaveRequest, history }: { leaveRequest: 
     const startDate = parseISO(leaveRequest.start_date);
 
     const canRevoke =
-        leaveRequest.latestStatus === "Approved" &&
+        leaveRequest.latest_status === "Approved" &&
         startDate > today;
 
     const [open, setOpen] = useState(false);
@@ -63,15 +63,15 @@ export default function LeaveRequest({ leaveRequest, history }: { leaveRequest: 
                 <Card sx={{ flexGrow: 1, boxShadow: 3, borderRadius: 2 }}>
                     <CardHeader
                         onClick={() => router.push(`/employees/${leaveRequest.employee_id}`)}
-                        avatar={<Avatar alt={`${leaveRequest.employeeFirstname} ${leaveRequest.employeeLastname}`}
-                            src={leaveRequest.employeeAvatarUrl}
+                        avatar={<Avatar alt={`${leaveRequest.employee_first_name} ${leaveRequest.employee_last_name}`}
+                            src={leaveRequest.employee_profile}
                             sx={{ width: 150, height: 150, marginTop: "20px", marginLeft: "20px", marginRight: "15px" }}
                         />
                         }
-                        title={<Typography variant="h4">{leaveRequest.employeeFirstname} {leaveRequest.employeeLastname}</Typography>}
+                        title={<Typography variant="h4">{leaveRequest.employee_first_name} {leaveRequest.employee_last_name}</Typography>}
                         subheader={
                             <Box>
-                                <Typography variant="subtitle1">{leaveRequest.employeePosition}</Typography>
+                                <Typography variant="subtitle1">{leaveRequest.employee_position}</Typography>
                                 <Typography variant="subtitle2">Employee ID: {leaveRequest.employee_id}</Typography>
                             </Box>
                         }
@@ -81,7 +81,7 @@ export default function LeaveRequest({ leaveRequest, history }: { leaveRequest: 
                         <Typography variant="h5" sx={{ marginLeft: "25px" }}>Request Information ID: {leaveRequest.request_id}</Typography>
                         <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
                             <Detail label="Employee" text={
-                                leaveRequest.employeeFirstname + " " + leaveRequest.employeeLastname
+                                leaveRequest.employee_first_name + " " + leaveRequest.employee_last_name
                             } />
                             <Detail label="Leave Type" text={leaveRequest.leave_type} />
                         </Box>
@@ -91,13 +91,13 @@ export default function LeaveRequest({ leaveRequest, history }: { leaveRequest: 
                         </Box>
                         <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
                             <Detail label="Duration" text={calculateLeaveDuration(leaveRequest).toString()} />
-                            <Detail label="Status" text={leaveRequest.latestStatus} />
+                            <Detail label="Status" text={leaveRequest.latest_status} />
                         </Box>
                         <Box sx={{ display: "grid", gridTemplateColumns: "1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
                             <Detail label="Reason" text={leaveRequest.reason} />
                         </Box>
 
-                        {leaveRequest.latestStatus === "Rejected" && (
+                        {leaveRequest.latest_status === "Rejected" && (
                             <Box sx={{ display: "grid", gridTemplateColumns: "1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
                                 <Detail label="Supervisor's Reason" text={leaveRequest.rejectionReason || "N/A"} />
                             </Box>

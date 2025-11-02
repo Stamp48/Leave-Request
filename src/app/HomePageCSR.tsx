@@ -37,7 +37,7 @@ export default function HomePage({ leaveRequests, employees, departments }: { le
 
   // --- Map for quick employee department lookups ---
   const employeeDeptMap = React.useMemo(() => {
-    return new Map(employees.map(emp => [emp.employee_id, emp.department]))
+    return new Map(employees.map(emp => [emp.id, emp.department]))
   }, [employees])
 
   // --- Single, time-filtered list of requests ---

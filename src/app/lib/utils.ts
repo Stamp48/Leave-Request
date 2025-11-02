@@ -1,8 +1,8 @@
-// src/app/lib/utils.ts
 // CHANGED: Correctly import both types
 import { DepartmentType, DivisionType } from "./mockDataDepDiv";
 import { EmployeeType } from "./mockDataEmp";
-import { LeaveRequestType } from "./mockDataLeaveRequest";
+// CHANGED: Updated import path
+import { LeaveRequestType } from "./mockDataLeaveRequest"; 
 import { parseISO, startOfDay } from "date-fns";
 import { DateRange } from "react-day-picker";
 
@@ -85,8 +85,9 @@ function parseLocalDate(dateString: string): Date {
  * This function correctly handles:
  * - Weekends (Saturday/Sunday)
  * - Single-day full-day requests
- * - Single-day half-day requests (using `isHalfDay`)
+ * - Single-day half-day requests (using `is_half_day`)
  * - Multi-day requests with half-days on the first or last day
+ * * UPDATED: to use snake_case properties (is_half_day, etc.)
  */
 export function calculateLeaveDuration(request: LeaveRequestType): number {
   const startDate = parseLocalDate(request.start_date);
@@ -100,7 +101,8 @@ export function calculateLeaveDuration(request: LeaveRequestType): number {
       return 0;
     }
     // It's a weekday
-    return request.isHalfDay ? 0.5 : 1;
+    // FIXED: Use snake_case
+    return request.is_half_day ? 0.5 : 1;
   }
 
   // --- 2. Handle multi-day requests ---
@@ -116,9 +118,11 @@ export function calculateLeaveDuration(request: LeaveRequestType): number {
       const isFirstDay = currentDate.getTime() === startDate.getTime();
       const isLastDay = currentDate.getTime() === endDate.getTime();
 
-      if (isFirstDay && request.isFirstHalfDay) {
+      // FIXED: Use snake_case
+      if (isFirstDay && request.is_first_half_day) {
         totalDays += 0.5;
-      } else if (isLastDay && request.isLastHalfDay) {
+      // FIXED: Use snake_case
+      } else if (isLastDay && request.is_last_half_day) { 
         totalDays += 0.5;
       } else {
         // It's a full workday
