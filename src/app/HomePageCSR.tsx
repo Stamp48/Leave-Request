@@ -13,7 +13,7 @@ import { ChartPieLabel } from "@/components/chart-pie-label"
 import type { ChartConfig } from "@/components/ui/chart"
 import { LeaveRequestType } from "./lib/mockDataLeaveRequest"
 import { EmployeeType } from "./lib/mockDataEmp"
-import { DepartmentType } from "./lib/mockDataDepDiv"
+import { DivisionType } from "./lib/mockDataDepDiv"
 
 // This config is for the Area Chart
 const totalChartConfig = {
@@ -32,12 +32,12 @@ const DEPARTMENT_COLORS = [
   "var(--chart-5)",
 ]
 
-export default function HomePage({leaveRequests, employees, departments} : {leaveRequests:LeaveRequestType[], employees:EmployeeType[], departments:DepartmentType[] }) {
+export default function HomePage({ leaveRequests, employees, departments }: { leaveRequests: LeaveRequestType[], employees: EmployeeType[], departments: DivisionType[] }) {
   const [timeRange, setTimeRange] = React.useState("7d")
 
   // --- Map for quick employee department lookups ---
   const employeeDeptMap = React.useMemo(() => {
-    return new Map(employees.map(emp => [emp.id, emp.department]))
+    return new Map(employees.map(emp => [emp.employee_id, emp.department]))
   }, [employees])
 
   // --- Single, time-filtered list of requests ---
@@ -55,7 +55,7 @@ export default function HomePage({leaveRequests, employees, departments} : {leav
     startDate.setHours(0, 0, 0, 0)
 
     return leaveRequests.filter(req => {
-      const reqDate = new Date(req.startDate)
+      const reqDate = new Date(req.start_date)
       return reqDate >= startDate
     })
   }, [leaveRequests, timeRange])
@@ -79,7 +79,7 @@ export default function HomePage({leaveRequests, employees, departments} : {leav
     // ... (logic from previous step, no changes)
     const countsByDate: Record<string, number> = {}
     for (const req of filteredRequests) {
-      countsByDate[req.startDate] = (countsByDate[req.startDate] || 0) + 1
+      countsByDate[req.start_date] = (countsByDate[req.start_date] || 0) + 1
     }
     return Object.entries(countsByDate)
       .map(([date, total]) => ({ date, total }))
@@ -91,7 +91,7 @@ export default function HomePage({leaveRequests, employees, departments} : {leav
     // ... (logic from previous step, no changes)
     const countsByDept: Record<string, number> = {}
     for (const req of filteredRequests) {
-      const department = employeeDeptMap.get(req.employeeId) || "Unknown"
+      const department = employeeDeptMap.get(req.employee_id) || "Unknown"
       countsByDept[department] = (countsByDept[department] || 0) + 1
     }
     return Object.entries(countsByDept).map(([deptName, total]) => ({
@@ -106,10 +106,10 @@ export default function HomePage({leaveRequests, employees, departments} : {leav
       approved: { label: "Approved" },
       count: { label: "Count" }, // Add a label for employee count
     }
-    
+
     departments.forEach((dept, index) => {
-      config[dept.departmentName] = {
-        label: dept.departmentName,
+      config[dept.department_name] = {
+        label: dept.department_name,
         color: DEPARTMENT_COLORS[index % DEPARTMENT_COLORS.length],
       }
     })
@@ -126,7 +126,7 @@ export default function HomePage({leaveRequests, employees, departments} : {leav
     const countsByDept: Record<string, number> = {}
     for (const req of filteredRequests) {
       if (req.latestStatus !== 'Approved') continue
-      const department = employeeDeptMap.get(req.employeeId) || "Unknown"
+      const department = employeeDeptMap.get(req.employee_id) || "Unknown"
       countsByDept[department] = (countsByDept[department] || 0) + 1
     }
     return Object.entries(countsByDept).map(([deptName, total]) => ({
@@ -171,7 +171,7 @@ export default function HomePage({leaveRequests, employees, departments} : {leav
       {/* --- Area Chart --- */}
       <Box sx={{ flex: 6, paddingX: "25px", paddingY: "10px" }}>
         {/* ... (ChartAreaInteractive component) ... */}
-         <ChartAreaInteractive
+        <ChartAreaInteractive
           data={areaChartData}
           chartConfig={totalChartConfig}
           timeRange={timeRange}
@@ -183,17 +183,17 @@ export default function HomePage({leaveRequests, employees, departments} : {leav
       {/* --- Bar & Pie Charts --- */}
       <Box sx={{ flex: 3, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, paddingX: "30px", paddingY: "10px" }}>
         <ChartBarHorizontal data={departmentChartData} />
-        
+
         {/* --- 2. Pass new props to Donut Chart --- */}
-        <ChartPieDonutText 
+        <ChartPieDonutText
           data={employeeByDeptData}
           config={pieChartConfig}
           dataKey="count"
           nameKey="department"
-          totalLabel="Employees" 
+          totalLabel="Employees"
         />
-        
-        <ChartPieLabel 
+
+        <ChartPieLabel
           data={approvedByDeptData}
           config={pieChartConfig}
           dataKey="approved"

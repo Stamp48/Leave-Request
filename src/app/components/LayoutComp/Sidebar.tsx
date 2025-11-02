@@ -61,7 +61,7 @@ export default function Sidebar() {
             <Box
                 sx={{
                     height: "100%",
-                    background: "linear-gradient(to bottom, #1976d2, #42a5f5)",
+                    background: "linear-gradient(to top, #1976d2, #42a5f5)",
                     color: "white",
                     p: 0.5,
                 }}

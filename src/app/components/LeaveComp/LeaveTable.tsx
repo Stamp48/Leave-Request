@@ -22,12 +22,12 @@ interface Column {
 
 
 const columns: readonly Column[] = [
-    { id: 'requestId', label: 'Request ID', minWidth: 50 },
-    { id: 'employeeFirstname', label: 'Employee', minWidth: 150 }, 
-    { id: 'employeeDepartment', label: 'Division', minWidth: 150},
-    { id: 'leaveType', label: 'Leave Type', minWidth: 100 },
-    { id: 'startDate', label: 'Start Date', minWidth: 100 },
-    { id: 'endDate', label: 'End Date', minWidth: 100 },
+    { id: 'request_id', label: 'Request ID', minWidth: 50 },
+    { id: 'employeeFirstname', label: 'Employee', minWidth: 150 },
+    { id: 'employeeDepartment', label: 'Division', minWidth: 150 },
+    { id: 'leave_type', label: 'Leave Type', minWidth: 100 },
+    { id: 'start_date', label: 'Start Date', minWidth: 100 },
+    { id: 'end_date', label: 'End Date', minWidth: 100 },
     { id: 'latestStatus', label: 'Status', minWidth: 100 },
 ];
 
@@ -88,11 +88,11 @@ export default function LeaveTable({ rows }: { rows: LeaveRequestType[] }) {
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row) => (
                                 <TableRow
-                                    key={row.requestId} // Use the unique requestId for the key
+                                    key={row.request_id} // Use the unique requestId for the key
                                     hover
                                     sx={{ cursor: "pointer" }}
                                     // Added an example onClick for navigation
-                                    onClick={() => router.push(`/leaveRequests/${row.requestId}`)}
+                                    onClick={() => router.push(`/leaveRequests/${row.request_id}`)}
                                 >
                                     {columns.map((column) => {
                                         return (

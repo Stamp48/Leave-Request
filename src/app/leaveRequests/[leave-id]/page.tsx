@@ -5,14 +5,14 @@ import { mockStatusHistory, StatusHistoryType } from "@/app/lib/mockStatusHistor
 
 export default function LeaveRequestPage({ params }: { params: { "leave-id": string } }) {
     const leaveId = params["leave-id"];
-    const leaveRequest = mockLeaveRequests.find(lr => lr.requestId.toString() === leaveId);
+    const leaveRequest = mockLeaveRequests.find(lr => lr.request_id.toString() === leaveId);
 
     if (!leaveRequest) return <h1>Leave Request not found</h1>;
 
     // 2. Filter the history list for this specific request ID
     const requestHistory = mockStatusHistory
         .filter(item => item.requestId.toString() === leaveId)
-        .sort((a, b) => 
+        .sort((a, b) =>
             // Sort by most recent update first
             new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
         );

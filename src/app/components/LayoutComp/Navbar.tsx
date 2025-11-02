@@ -30,7 +30,7 @@ export default function NavBar() {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{background: "linear-gradient(to left, #1976d2, #42a5f5)"}}>
       <Container maxWidth="xl">
         <Toolbar disableGutters sx={{ justifyContent:"flex-end"}}>
           <Box sx={{ flexGrow: 0 }}>

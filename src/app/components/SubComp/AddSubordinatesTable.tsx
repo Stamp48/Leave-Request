@@ -15,32 +15,27 @@ import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import { EmployeeType } from '../../employees/page';
+// FIXED: Import correct EmployeeType
+import { EmployeeType } from '@/app/lib/mockDataEmp'; 
 import Avatar from '@mui/material/Avatar';
 import { useRouter } from 'next/navigation';
-import AddIcon from '@mui/icons-material/Add';
 
 
-
-
-
+// FIXED: Interface to match EmployeeType and custom 'fullName'
 interface Column {
-    id: keyof EmployeeType;
+    id: keyof EmployeeType | 'fullName';
     label: string;
     minWidth?: number;
     align?: 'right';
 }
 
-
+// FIXED: Columns match new hierarchy and EmployeeType
 const columns: readonly Column[] = [
-    { id: 'avatarUrl', label: 'Profile', minWidth: 100 },
-    { id: 'firstname', label: 'Full Name', minWidth: 170 },
-    { id: 'username', label: 'Username', minWidth: 150 },
+    { id: 'profile_picture', label: 'Profile', minWidth: 100 },
+    { id: 'fullName', label: 'Full Name', minWidth: 170 },
     { id: 'email', label: 'Email', minWidth: 200 },
-    { id: 'department', label: 'Department', minWidth: 150 },
     { id: 'division', label: 'Division', minWidth: 150 },
+    { id: 'department', label: 'Department', minWidth: 150 },
 ];
 
 
@@ -63,8 +58,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                         color="primary"
                         indeterminate={numSelected > 0 && numSelected < rowCount}
                         checked={rowCount > 0 && numSelected === rowCount}
-                        onChange={onSelectAllClick}
-                        inputProps={{ 'aria-label': 'select all subordinates' }}
+                        onChange={onSelectAllClick} // Use prop
+                        inputProps={{ 'aria-label': 'select all employees' }}
                     />
                 </TableCell>
                 {columns.map((column) => (
@@ -111,7 +106,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                     id="tableTitle"
                     component="div"
                 >
-                    Subordinates in the Department
+                    Employees in Division
                 </Typography>
             )}
 
@@ -120,42 +115,30 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 
 
+// NEW: Define all props passed from the parent
+interface AddSubordinatesTableProps {
+  rows: EmployeeType[];
+  currEmployee: EmployeeType;
+  selected: readonly number[];
+  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onRowClick: (event: React.MouseEvent<unknown>, id: number) => void;
+}
 
-export default function AddSubordinatesTable({ rows, currEmployee }: { rows: EmployeeType[], currEmployee: EmployeeType }) {
+export default function AddSubordinatesTable({ 
+    rows, 
+    currEmployee,
+    selected,
+    onSelectAllClick,
+    onRowClick 
+}: AddSubordinatesTableProps) { // Use new interface
 
     const router = useRouter();
-    const [selected, setSelected] = React.useState<readonly number[]>([]);
+    // REMOVED: Local 'selected' state
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-
-    const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.checked) {
-            const newSelected = rows.map((n) => n.id);
-            setSelected(newSelected);
-            return;
-        }
-        setSelected([]);
-    };
-
-    const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
-        const selectedIndex = selected.indexOf(id);
-        let newSelected: readonly number[] = [];
-
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, id);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1),
-            );
-        }
-        setSelected(newSelected);
-    };
+    // REMOVED: handleSelectAllClick
+    // REMOVED: handleClick
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
@@ -188,23 +171,25 @@ export default function AddSubordinatesTable({ rows, currEmployee }: { rows: Emp
                         size={'medium'}
                     >
                         <EnhancedTableHead
-                            numSelected={selected.length}
-                            onSelectAllClick={handleSelectAllClick}
+                            numSelected={selected.length} // Use prop
+                            onSelectAllClick={onSelectAllClick} // Use prop
                             rowCount={rows.length}
                         />
                         <TableBody>
                             {visibleRows.map((row, index) => {
-                                const isItemSelected = selected.includes(row.id);
+                                // FIXED: Use prop 'selected' and 'employee_id'
+                                const isItemSelected = selected.includes(row.employee_id);
                                 const labelId = `enhanced-table-checkbox-${index}`;
 
                                 return (
                                     <TableRow
                                         hover
-                                        onClick={() => router.push(`/employees/${row.id}`)}
+                                        // FIXED: Use employee_id
+                                        onClick={() => router.push(`/employees/${row.employee_id}`)}
                                         role="checkbox"
                                         aria-checked={isItemSelected}
                                         tabIndex={-1}
-                                        key={row.id}
+                                        key={row.employee_id} // FIXED
                                         selected={isItemSelected}
                                         sx={{ cursor: 'pointer' }}
                                     >
@@ -212,7 +197,11 @@ export default function AddSubordinatesTable({ rows, currEmployee }: { rows: Emp
                                             <Checkbox
                                                 color="primary"
                                                 checked={isItemSelected}
-                                                onClick={(e) => { e.stopPropagation(); handleClick(e as React.MouseEvent<unknown>, row.id); }}
+                                                // FIXED: Use onRowClick prop and employee_id
+                                                onClick={(e) => { 
+                                                    e.stopPropagation(); 
+                                                    onRowClick(e as React.MouseEvent<unknown>, row.employee_id); 
+                                                }}
                                                 inputProps={{
                                                     'aria-labelledby': labelId,
                                                 }}
@@ -224,13 +213,13 @@ export default function AddSubordinatesTable({ rows, currEmployee }: { rows: Emp
                                             scope="row"
                                             align='left'
                                         >
-                                            <Avatar src={row.avatarUrl} alt={`${row.firstname} ${row.lastname}`} />
+                                            {/* FIXED: Use correct prop names */}
+                                            <Avatar src={row.profile_picture} alt={`${row.first_name} ${row.last_name}`} />
                                         </TableCell>
-                                        <TableCell align="left">{row.firstname} {row.lastname}</TableCell>
-                                        <TableCell align="left">{row.username}</TableCell>
+                                        <TableCell align="left">{row.first_name} {row.last_name}</TableCell>
                                         <TableCell align="left">{row.email}</TableCell>
-                                        <TableCell align="left">{row.department}</TableCell>
                                         <TableCell align="left">{row.division}</TableCell>
+                                        <TableCell align="left">{row.department}</TableCell>
                                     </TableRow>
                                 );
                             })}

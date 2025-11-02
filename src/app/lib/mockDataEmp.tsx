@@ -1,267 +1,245 @@
-
 export interface EmployeeType {
-  id: number;
-  firstname: string;
-  lastname: string;
-  username: string;
+  employee_id: number;
+  first_name: string;
+  last_name: string;
   email: string;
-  department: string;
   division: string;
+  department: string;
   position: string;
   phone: string;
   address: string;
-  avatarUrl: string;
-  hireDate: string;
-  birthDate: string;
-  supervisorId?: number;
+  profile_picture: string;
+  hire_date: string;
+  birth_date: string;
+  // CHANGED: Made required and added 'null' type
+  supervisor_id: number | null;
 }
+
 
 export const mockEmployees: EmployeeType[] = [
   {
-    id: 1,
-    firstname: "Alice",
-    lastname: "Smith",
-    username: "alice123",
+    employee_id: 1,
+    first_name: "Alice",
+    last_name: "Smith",
     email: "alice@example.com",
-    department: "HR",
-    division: "Recruitment",
-    position: "HR Manager",
+    division: "HR",
+    department: "Recruitment",
+    position: "HR Manager", // from mockPositions id 1
     phone: "555-1001",
     address: "123 Main St, Springfield",
-    avatarUrl: "/avatars/alice.jpg",
-    hireDate: "2020-01-15",
-    birthDate: "1990-05-10"
-    // Top HR Manager → no supervisor
+    profile_picture: "/avatars/alice.jpg",
+    hire_date: "2020-01-15",
+    birth_date: "1990-05-10",
+    supervisor_id: null,
   },
   {
-    id: 2,
-    firstname: "Bob",
-    lastname: "Johnson",
-    username: "bob456",
+    employee_id: 2,
+    first_name: "Bob",
+    last_name: "Johnson",
     email: "bob@example.com",
-    department: "Engineering",
-    division: "Backend",
-    position: "Senior Backend Engineer",
+    division: "Engineering",
+    department: "Backend",
+    position: "Senior Backend Engineer", // from mockPositions id 4
     phone: "555-1002",
     address: "456 Oak Ave, Springfield",
-    avatarUrl: "/avatars/bob.jpg",
-    hireDate: "2018-03-22",
-    birthDate: "1988-11-23"
-    // Senior engineer → no supervisor
+    profile_picture: "/avatars/bob.jpg",
+    hire_date: "2018-03-22",
+    birth_date: "1988-11-23",
+    supervisor_id: null,
   },
   {
-    id: 3,
-    firstname: "Charlie",
-    lastname: "Williams",
-    username: "charlie789",
+    employee_id: 3,
+    first_name: "Charlie",
+    last_name: "Williams",
     email: "charlie@example.com",
-    department: "Marketing",
-    division: "Digital",
-    position: "Content Strategist",
+    division: "Marketing",
+    department: "Digital",
+    position: "Marketing Specialist", // from mockPositions id 9
     phone: "555-1003",
     address: "789 Pine Rd, Springfield",
-    avatarUrl: "/avatars/charlie.jpg",
-    hireDate: "2019-07-10",
-    birthDate: "1992-02-14",
-    supervisorId: 14 // reports to Nina (PR Specialist / Marketing lead)
+    profile_picture: "/avatars/charlie.jpg",
+    hire_date: "2019-07-10",
+    birth_date: "1992-02-14",
+    supervisor_id: 14,
   },
   {
-    id: 4,
-    firstname: "David",
-    lastname: "Brown",
-    username: "david321",
+    employee_id: 4,
+    first_name: "David",
+    last_name: "Brown",
     email: "david@example.com",
-    department: "Sales",
-    division: "B2B",
-    position: "Sales Executive",
+    division: "Sales",
+    department: "B2B",
+    position: "Sales Executive", // from mockPositions id 11
     phone: "555-1004",
     address: "321 Maple St, Springfield",
-    avatarUrl: "/avatars/david.jpg",
-    hireDate: "2021-05-01",
-    birthDate: "1991-08-30",
-    supervisorId: 10 // reports to Jack (Sales Associate lead)
+    profile_picture: "/avatars/david.jpg",
+    hire_date: "2021-05-01",
+    birth_date: "1991-08-30",
+    supervisor_id: 10,
   },
   {
-    id: 5,
-    firstname: "Eva",
-    lastname: "Davis",
-    username: "eva654",
+    employee_id: 5,
+    first_name: "Eva",
+    last_name: "Davis",
     email: "eva@example.com",
-    department: "Engineering",
-    division: "Frontend",
-    position: "Frontend Developer",
+    division: "Engineering",
+    department: "Frontend",
+    position: "Software Engineer", // from mockPositions id 5
     phone: "555-1005",
     address: "654 Cedar Ave, Springfield",
-    avatarUrl: "/avatars/eva.jpg",
-    hireDate: "2017-09-18",
-    birthDate: "1993-12-05",
-    supervisorId: 2 // reports to Bob
+    profile_picture: "/avatars/eva.jpg",
+    hire_date: "2017-09-18",
+    birth_date: "1993-12-05",
+    supervisor_id: 2,
   },
   {
-    id: 6,
-    firstname: "Frank",
-    lastname: "Miller",
-    username: "frank987",
+    employee_id: 6,
+    first_name: "Frank",
+    last_name: "Miller",
     email: "frank@example.com",
-    department: "HR",
-    division: "Payroll",
-    position: "Payroll Specialist",
+    division: "HR",
+    department: "Payroll",
+    position: "HR Specialist", // from mockPositions id 2
     phone: "555-1006",
     address: "987 Birch Rd, Springfield",
-    avatarUrl: "/avatars/frank.jpg",
-    hireDate: "2016-11-30",
-    birthDate: "1987-03-19",
-    supervisorId: undefined
+    profile_picture: "/avatars/frank.jpg",
+    hire_date: "2016-11-30",
+    birth_date: "1987-03-19",
+    supervisor_id: null,
   },
   {
-    id: 7,
-    firstname: "Grace",
-    lastname: "Wilson",
-    username: "grace111",
+    employee_id: 7,
+    first_name: "Grace",
+    last_name: "Wilson",
     email: "grace@example.com",
-    department: "Finance",
-    division: "Accounts",
-    position: "Accountant",
+    division: "Finance",
+    department: "Accounts",
+    position: "Accountant", // from mockPositions id 13
     phone: "555-1007",
     address: "111 Willow St, Springfield",
-    avatarUrl: "/avatars/grace.jpg",
-    hireDate: "2015-04-12",
-    birthDate: "1989-07-22",
-    supervisorId: 11 // reports to Karen (Finance Audit head)
+    profile_picture: "/avatars/grace.jpg",
+    hire_date: "2015-04-12",
+    birth_date: "1989-07-22",
+    supervisor_id: 11,
   },
   {
-    id: 8,
-    firstname: "Hannah",
-    lastname: "Moore",
-    username: "hannah222",
+    employee_id: 8,
+    first_name: "Hannah",
+    last_name: "Moore",
     email: "hannah@example.com",
-    department: "Marketing",
-    division: "Events",
-    position: "Event Coordinator",
+    division: "Marketing",
+    department: "Events",
+    position: "Marketing Specialist", // from mockPositions id 9
     phone: "555-1008",
     address: "222 Aspen Ave, Springfield",
-    avatarUrl: "/avatars/hannah.jpg",
-    hireDate: "2022-02-20",
-    birthDate: "1994-10-11",
-    supervisorId: 14 // reports to Nina (Marketing lead)
+    profile_picture: "/avatars/hannah.jpg",
+    hire_date: "2022-02-20",
+    birth_date: "1994-10-11",
+    supervisor_id: 14,
   },
   {
-    id: 9,
-    firstname: "Ian",
-    lastname: "Taylor",
-    username: "ian333",
+    employee_id: 9,
+    first_name: "Ian",
+    last_name: "Taylor",
     email: "ian@example.com",
-    department: "Engineering",
-    division: "DevOps",
-    position: "DevOps Engineer",
+    division: "Engineering",
+    department: "DevOps",
+    position: "DevOps Engineer", // from mockPositions id 6
     phone: "555-1009",
     address: "333 Elm St, Springfield",
-    avatarUrl: "/avatars/ian.jpg",
-    hireDate: "2014-06-25",
-    birthDate: "1986-01-17",
-    supervisorId: 2 // reports to Bob
+    profile_picture: "/avatars/ian.jpg",
+    hire_date: "2014-06-25",
+    birth_date: "1986-01-17",
+    supervisor_id: 2,
   },
   {
-    id: 10,
-    firstname: "Jack",
-    lastname: "Anderson",
-    username: "jack444",
+    employee_id: 10,
+    first_name: "Jack",
+    last_name: "Anderson",
     email: "jack@example.com",
-    department: "Sales",
-    division: "Retail",
-    position: "Sales Associate Lead",
+    division: "Sales",
+    department: "Retail",
+    position: "Sales Associate Lead", // from mockPositions id 10
     phone: "555-1010",
     address: "444 Poplar Rd, Springfield",
-    avatarUrl: "/avatars/jack.jpg",
-    hireDate: "2013-12-03",
-    birthDate: "1990-09-09"
-    // Head of Sales → no supervisor
+    profile_picture: "/avatars/jack.jpg",
+    hire_date: "2013-12-03",
+    birth_date: "1990-09-09",
+    supervisor_id: null,
   },
   {
-    id: 11,
-    firstname: "Karen",
-    lastname: "Thomas",
-    username: "karen555",
+    employee_id: 11,
+    first_name: "Karen",
+    last_name: "Thomas",
     email: "karen@example.com",
-    department: "Finance",
-    division: "Audit",
-    position: "Finance Manager",
+    division: "Finance",
+    department: "Audit",
+    position: "Finance Manager", // from mockPositions id 12
     phone: "555-1011",
     address: "555 Spruce Ave, Springfield",
-    avatarUrl: "/avatars/karen.jpg",
-    hireDate: "2012-08-14",
-    birthDate: "1985-04-28"
-    // Head of Finance → no supervisor
+    profile_picture: "/avatars/karen.jpg",
+    hire_date: "2012-08-14",
+    birth_date: "1985-04-28",
+    supervisor_id: null,
   },
   {
-    id: 12,
-    firstname: "Leo",
-    lastname: "Jackson",
-    username: "leo666",
+    employee_id: 12,
+    first_name: "Leo",
+    last_name: "Jackson",
     email: "leo@example.com",
-    department: "Engineering",
-    division: "QA",
-    position: "QA Engineer",
+    division: "Engineering",
+    department: "QA",
+    position: "QA Engineer", // from mockPositions id 7
     phone: "555-1012",
     address: "666 Chestnut St, Springfield",
-    avatarUrl: "/avatars/leo.jpg",
-    hireDate: "2011-10-19",
-    birthDate: "1988-06-15",
-    supervisorId: 2 // reports to Bob
+    profile_picture: "/avatars/leo.jpg",
+    hire_date: "2011-10-19",
+    birth_date: "1988-06-15",
+    supervisor_id: 2,
   },
   {
-    id: 13,
-    firstname: "Mona",
-    lastname: "White",
-    username: "mona777",
+    employee_id: 13,
+    first_name: "Mona",
+    last_name: "White",
     email: "mona@example.com",
-    department: "HR",
-    division: "Training",
-    position: "Training Coordinator",
+    division: "HR",
+    department: "Training",
+    position: "HR Specialist", // from mockPositions id 2
     phone: "555-1013",
     address: "777 Redwood Rd, Springfield",
-    avatarUrl: "/avatars/mona.jpg",
-    hireDate: "2023-01-05",
-    birthDate: "1995-03-03",
-    supervisorId: 1 // reports to Alice
+    profile_picture: "/avatars/mona.jpg",
+    hire_date: "2023-01-05",
+    birth_date: "1995-03-03",
+    supervisor_id: 1,
   },
   {
-    id: 14,
-    firstname: "Nina",
-    lastname: "Harris",
-    username: "nina888",
+    employee_id: 14,
+    first_name: "Nina",
+    last_name: "Harris",
     email: "nina@example.com",
-    department: "Marketing",
-    division: "PR",
-    position: "Marketing Lead",
+    division: "Marketing",
+    department: "PR",
+    position: "Marketing Lead", // from mockPositions id 8
     phone: "555-1014",
     address: "888 Magnolia Ave, Springfield",
-    avatarUrl: "/avatars/nina.jpg",
-    hireDate: "2020-07-28",
-    birthDate: "1992-08-18"
-    // Marketing Lead → no supervisor
+    profile_picture: "/avatars/nina.jpg",
+    hire_date: "2020-07-28",
+    birth_date: "1992-08-18",
+    supervisor_id: null,
   },
   {
-    id: 15,
-    firstname: "Oscar",
-    lastname: "Martin",
-    username: "oscar999",
+    employee_id: 15,
+    first_name: "Oscar",
+    last_name: "Martin",
     email: "oscar@example.com",
-    department: "Engineering",
-    division: "Mobile",
-    position: "Mobile Developer",
+    division: "Engineering",
+    department: "Mobile",
+    position: "Software Engineer", // from mockPositions id 5
     phone: "555-1015",
     address: "999 Cypress St, Springfield",
-    avatarUrl: "/avatars/oscar.jpg",
-    hireDate: "2019-05-16",
-    birthDate: "1991-12-21",
-    supervisorId: 2 // reports to Bob
-  }
+    profile_picture: "/avatars/oscar.jpg",
+    hire_date: "2019-05-16",
+    birth_date: "1991-12-21",
+    supervisor_id: 2,
+  },
 ];
-// ...existing code...
-
-
-
-
-
-
