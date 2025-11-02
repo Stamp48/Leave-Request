@@ -26,7 +26,7 @@ interface ChartPieDonutTextProps {
   config: ChartConfig
   dataKey: string
   nameKey: string
-  totalLabel: string
+  // totalLabel: string // This prop is no longer needed
 }
 
 export function ChartPieDonutText({
@@ -34,7 +34,6 @@ export function ChartPieDonutText({
   config,
   dataKey,
   nameKey,
-  totalLabel,
 }: ChartPieDonutTextProps) {
 
   // 2. Calculate the total dynamically from the data and dataKey
@@ -45,9 +44,9 @@ export function ChartPieDonutText({
   return (
     <Card className="flex flex-col w-full max-w-sm h-[350px]">
       <CardHeader className="items-center pb-0">
-        {/* 3. Update titles */}
-        <CardTitle>Employees by Department</CardTitle>
-        <CardDescription>Total company headcount</CardDescription>
+        {/* 3. FIXED: Update titles */}
+        <CardTitle>Employees by Division</CardTitle>
+        <CardDescription>Total company headcount by division</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -62,7 +61,7 @@ export function ChartPieDonutText({
             <Pie
               data={data} // 5. Use data prop
               dataKey={dataKey} // 6. Use dataKey prop
-              nameKey={nameKey} // 7. Use nameKey prop
+              nameKey={nameKey} // 7. Use nameKey prop (will be 'division')
               innerRadius={60}
               strokeWidth={5}
             >
@@ -89,8 +88,8 @@ export function ChartPieDonutText({
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          {/* 9. Use dynamic totalLabel */}
-                          {totalLabel}
+                          {/* 9. FIXED: Hardcoded label */}
+                          Employees
                         </tspan>
                       </text>
                     )

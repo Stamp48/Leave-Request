@@ -11,7 +11,8 @@ import { ChartPieLabel } from "@/components/chart-pie-label"
 
 // --- Import your mock data and chart types ---
 import type { ChartConfig } from "@/components/ui/chart"
-import { LeaveRequestType } from "./lib/mockDataLeaveRequest"
+// FIXED: Import from new snake_case file
+import { LeaveRequestType } from "./lib/mockDataLeaveRequest" 
 import { EmployeeType } from "./lib/mockDataEmp"
 import { DivisionType } from "./lib/mockDataDepDiv"
 
@@ -24,7 +25,7 @@ const totalChartConfig = {
 } satisfies ChartConfig
 
 // --- Define colors for the Pie Charts ---
-const DEPARTMENT_COLORS = [
+const DIVISION_COLORS = [ // Renamed for clarity
   "var(--chart-1)",
   "var(--chart-2)",
   "var(--chart-3)",
@@ -32,12 +33,13 @@ const DEPARTMENT_COLORS = [
   "var(--chart-5)",
 ]
 
-export default function HomePage({ leaveRequests, employees, departments }: { leaveRequests: LeaveRequestType[], employees: EmployeeType[], departments: DivisionType[] }) {
+// FIXED: Renamed prop 'departments' to 'divisions'
+export default function HomePage({ leaveRequests, employees, divisions }: { leaveRequests: LeaveRequestType[], employees: EmployeeType[], divisions: DivisionType[] }) {
   const [timeRange, setTimeRange] = React.useState("7d")
 
-  // --- Map for quick employee department lookups ---
-  const employeeDeptMap = React.useMemo(() => {
-    return new Map(employees.map(emp => [emp.id, emp.department]))
+  // --- FIXED: Map for quick employee DIVISION lookups ---
+  const employeeDivMap = React.useMemo(() => {
+    return new Map(employees.map(emp => [emp.employee_id, emp.division]))
   }, [employees])
 
   // --- Single, time-filtered list of requests ---
@@ -60,13 +62,14 @@ export default function HomePage({ leaveRequests, employees, departments }: { le
     })
   }, [leaveRequests, timeRange])
 
-  // --- Calculate dashboard totals ---
+  // --- FIXED: Calculate dashboard totals (using snake_case) ---
   const dashboardCounts = React.useMemo(() => {
     return filteredRequests.reduce(
       (acc, req) => {
-        if (req.latestStatus === "Pending") acc.pending++
-        else if (req.latestStatus === "Approved") acc.approved++
-        else if (req.latestStatus === "Rejected") acc.rejected++
+        // FIXED: Use latest_status
+        if (req.latest_status === "Pending") acc.pending++
+        else if (req.latest_status === "Approved") acc.approved++
+        else if (req.latest_status === "Rejected") acc.rejected++
         acc.total++
         return acc
       },
@@ -74,9 +77,8 @@ export default function HomePage({ leaveRequests, employees, departments }: { le
     )
   }, [filteredRequests])
 
-  // --- Data for the Area Chart ---
+  // --- Data for the Area Chart (No change) ---
   const areaChartData = React.useMemo(() => {
-    // ... (logic from previous step, no changes)
     const countsByDate: Record<string, number> = {}
     for (const req of filteredRequests) {
       countsByDate[req.start_date] = (countsByDate[req.start_date] || 0) + 1
@@ -86,73 +88,75 @@ export default function HomePage({ leaveRequests, employees, departments }: { le
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
   }, [filteredRequests])
 
-  // --- Data for the Bar Chart (Total by dept) ---
-  const departmentChartData = React.useMemo(() => {
-    // ... (logic from previous step, no changes)
-    const countsByDept: Record<string, number> = {}
+  // --- FIXED: Data for the Bar Chart (Total by DIVISION) ---
+  const divisionChartData = React.useMemo(() => {
+    const countsByDiv: Record<string, number> = {}
     for (const req of filteredRequests) {
-      const department = employeeDeptMap.get(req.employee_id) || "Unknown"
-      countsByDept[department] = (countsByDept[department] || 0) + 1
+      // FIXED: Use employeeDivMap
+      const division = employeeDivMap.get(req.employee_id) || "Unknown"
+      countsByDiv[division] = (countsByDiv[division] || 0) + 1
     }
-    return Object.entries(countsByDept).map(([deptName, total]) => ({
-      department: deptName,
+    return Object.entries(countsByDiv).map(([divName, total]) => ({
+      division: divName, // FIXED: Use 'division' prop
       total: total,
     }))
-  }, [filteredRequests, employeeDeptMap])
+  }, [filteredRequests, employeeDivMap])
 
-  // --- Config for BOTH Pie Charts ---
+  // --- FIXED: Config for BOTH Pie Charts (based on Divisions) ---
   const pieChartConfig = React.useMemo(() => {
     const config: ChartConfig = {
       approved: { label: "Approved" },
       count: { label: "Count" }, // Add a label for employee count
     }
 
-    departments.forEach((dept, index) => {
-      config[dept.department_name] = {
-        label: dept.department_name,
-        color: DEPARTMENT_COLORS[index % DEPARTMENT_COLORS.length],
+    // FIXED: Iterate over 'divisions' prop
+    divisions.forEach((div, index) => {
+      config[div.division_name] = {
+        label: div.division_name,
+        color: DIVISION_COLORS[index % DIVISION_COLORS.length],
       }
     })
     config["Unknown"] = {
       label: "Unknown",
-      color: DEPARTMENT_COLORS[departments.length % DEPARTMENT_COLORS.length],
+      color: DIVISION_COLORS[divisions.length % DIVISION_COLORS.length],
     }
     return config
-  }, [departments])
+  }, [divisions]) // FIXED: Depend on 'divisions'
 
-  // --- Data for the Pie Chart (Approved by dept) ---
-  const approvedByDeptData = React.useMemo(() => {
-    // ... (logic from previous step, no changes)
-    const countsByDept: Record<string, number> = {}
+  // --- FIXED: Data for the Pie Chart (Approved by DIVISION) ---
+  const approvedByDivData = React.useMemo(() => {
+    const countsByDiv: Record<string, number> = {}
     for (const req of filteredRequests) {
-      if (req.latestStatus !== 'Approved') continue
-      const department = employeeDeptMap.get(req.employee_id) || "Unknown"
-      countsByDept[department] = (countsByDept[department] || 0) + 1
+      // FIXED: Use latest_status
+      if (req.latest_status !== 'Approved') continue
+      // FIXED: Use employeeDivMap
+      const division = employeeDivMap.get(req.employee_id) || "Unknown"
+      countsByDiv[division] = (countsByDiv[division] || 0) + 1
     }
-    return Object.entries(countsByDept).map(([deptName, total]) => ({
-      department: deptName,
+    return Object.entries(countsByDiv).map(([divName, total]) => ({
+      division: divName, // FIXED: Use 'division' prop
       approved: total,
-      fill: pieChartConfig[deptName]?.color || "var(--chart-1)"
+      fill: pieChartConfig[divName]?.color || "var(--chart-1)"
     }))
-  }, [filteredRequests, employeeDeptMap, pieChartConfig])
+  }, [filteredRequests, employeeDivMap, pieChartConfig])
 
 
-  // --- 1. NEW: Data for the Donut Chart (Employees by dept) ---
-  // This data is NOT filtered by time.
-  const employeeByDeptData = React.useMemo(() => {
-    const countsByDept: Record<string, number> = {}
+  // --- FIXED: Data for the Donut Chart (Employees by DIVISION) ---
+  const employeeByDivData = React.useMemo(() => {
+    const countsByDiv: Record<string, number> = {}
 
     // Count all employees from the prop
     for (const emp of employees) {
-      const department = emp.department || "Unknown";
-      countsByDept[department] = (countsByDept[department] || 0) + 1
+      // FIXED: Group by 'division'
+      const division = emp.division || "Unknown";
+      countsByDiv[division] = (countsByDiv[division] || 0) + 1
     }
 
     // Map to the format the pie chart needs, adding the fill color
-    return Object.entries(countsByDept).map(([deptName, total]) => ({
-      department: deptName,
+    return Object.entries(countsByDiv).map(([divName, total]) => ({
+      division: divName, // FIXED: Use 'division' prop
       count: total, // We'll use "count" as the dataKey
-      fill: pieChartConfig[deptName]?.color || "var(--chart-1)"
+      fill: pieChartConfig[divName]?.color || "var(--chart-1)"
     }))
   }, [employees, pieChartConfig]) // Depends on employees list and the color config
 
@@ -161,7 +165,6 @@ export default function HomePage({ leaveRequests, employees, departments }: { le
     <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", marginBottom: "100px" }}>
       {/* --- Cards --- */}
       <Box sx={{ flex: 3, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, paddingY: "5px" }}>
-        {/* ... (DashCard components) ... */}
         <DashCard title="Total" value={dashboardCounts.total} />
         <DashCard title="Pending" value={dashboardCounts.pending} />
         <DashCard title="Approved" value={dashboardCounts.approved} />
@@ -170,7 +173,6 @@ export default function HomePage({ leaveRequests, employees, departments }: { le
 
       {/* --- Area Chart --- */}
       <Box sx={{ flex: 6, paddingX: "25px", paddingY: "10px" }}>
-        {/* ... (ChartAreaInteractive component) ... */}
         <ChartAreaInteractive
           data={areaChartData}
           chartConfig={totalChartConfig}
@@ -182,24 +184,26 @@ export default function HomePage({ leaveRequests, employees, departments }: { le
 
       {/* --- Bar & Pie Charts --- */}
       <Box sx={{ flex: 3, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, paddingX: "30px", paddingY: "10px" }}>
-        <ChartBarHorizontal data={departmentChartData} />
+        {/* FIXED: Pass 'divisionChartData' */}
+        <ChartBarHorizontal data={divisionChartData} />
 
-        {/* --- 2. Pass new props to Donut Chart --- */}
+        {/* FIXED: Pass 'employeeByDivData' and 'division' as nameKey */}
         <ChartPieDonutText
-          data={employeeByDeptData}
+          data={employeeByDivData}
           config={pieChartConfig}
           dataKey="count"
-          nameKey="department"
-          totalLabel="Employees"
+          nameKey="division"
         />
 
+        {/* FIXED: Pass 'approvedByDivData' and 'division' as nameKey */}
         <ChartPieLabel
-          data={approvedByDeptData}
+          data={approvedByDivData}
           config={pieChartConfig}
           dataKey="approved"
-          nameKey="department"
+          nameKey="division"
         />
       </Box>
     </Box>
   )
 }
+
