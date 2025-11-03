@@ -1,4 +1,5 @@
 'use client';
+// FIXED: Import new snake_case type
 import { LeaveRequestType } from "@/app/lib/mockDataLeaveRequest";
 import { Box, Button, Card, CardContent, CardHeader, Typography, TextField } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
@@ -8,8 +9,12 @@ import { useRouter } from "next/navigation";
 import { parseISO, startOfDay } from "date-fns";
 import { useState } from "react";
 import * as React from "react";
-import { StatusHistoryType } from "@/app/lib/mockStatusHistory"
+// FIXED: Import new snake_case type
+import { StatusHistoryType } from "@/app/lib/mockStatusHistory";
 import LeaveHistory from "@/app/components/LeaveComp/LeaveHistory";
+// NEW: Import Attachment types and an icon
+import { AttachmentType } from "@/app/lib/mockAttachment";
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 
 
 import Dialog from '@mui/material/Dialog';
@@ -19,32 +24,69 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 
-export default function LeaveRequest({ leaveRequest, history }: { leaveRequest: LeaveRequestType, history: StatusHistoryType[] }) {
+/**
+ * NEW: Helper function to provide detailed duration text.
+ * This reads the new half-day booleans.
+ */
+const formatDurationDetails = (request: LeaveRequestType): string => {
+    const totalDuration = calculateLeaveDuration(request);
+    let details: string[] = [];
+
+    // Check for single half-day
+    if (request.is_half_day) {
+        details.push(request.is_morning ? "Half Day (Morning)" : "Half Day (Afternoon)");
+    } else {
+        // Check for multi-day half-days
+        if (request.is_first_half_day) {
+            details.push("First day is half-day");
+        }
+        if (request.is_last_half_day) {
+            details.push("Last day is half-day");
+        }
+    }
+
+    const dayString = totalDuration === 1 ? "day" : "days";
+    if (details.length === 0) {
+        return `${totalDuration} ${dayString}`;
+    } else {
+        // e.g., "2.5 days (First day is half-day)"
+        return `${totalDuration} ${dayString} (${details.join(', ')})`;
+    }
+};
+
+
+export default function LeaveRequest({
+    leaveRequest,
+    history,
+    attachments // NEW: Accept attachments prop
+}: {
+    leaveRequest: LeaveRequestType,
+    history: StatusHistoryType[],
+    attachments: AttachmentType[] // NEW
+}) {
     const router = useRouter();
 
     const today = startOfDay(new Date());
 
     const startDate = parseISO(leaveRequest.start_date);
 
+    // FIXED: Use snake_case
     const canRevoke =
         leaveRequest.latest_status === "Approved" &&
         startDate > today;
 
     const [open, setOpen] = useState(false);
-    // 2. Add state for your text field
     const [revokeReason, setRevokeReason] = useState("");
 
     const handleClickOpen = () => {
         setOpen(true);
     };
 
-    // 3. Update handleClose to reset the reason
     const handleClose = () => {
         setOpen(false);
         setRevokeReason(""); // Reset reason on close
     };
 
-    // 4. Create a submit handler
     const handleRevokeSubmit = () => {
         // TODO: Add your API call here
         console.log("Revoking request with reason:", revokeReason);
@@ -64,6 +106,7 @@ export default function LeaveRequest({ leaveRequest, history }: { leaveRequest: 
                     <CardHeader
                         onClick={() => router.push(`/employees/${leaveRequest.employee_id}`)}
                         avatar={<Avatar alt={`${leaveRequest.employee_first_name} ${leaveRequest.employee_last_name}`}
+                            // FIXED: Use employeeAvatarUrl
                             src={leaveRequest.employee_profile}
                             sx={{ width: 150, height: 150, marginTop: "20px", marginLeft: "20px", marginRight: "15px" }}
                         />
@@ -77,11 +120,10 @@ export default function LeaveRequest({ leaveRequest, history }: { leaveRequest: 
                         }
                     />
                     <CardContent>
-                        {/* ... (all your Detail components remain the same) ... */}
                         <Typography variant="h5" sx={{ marginLeft: "25px" }}>Request Information ID: {leaveRequest.request_id}</Typography>
                         <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
                             <Detail label="Employee" text={
-                                leaveRequest.employee_first_name + " " + leaveRequest.employee_last_name
+                                `${leaveRequest.employee_first_name} ${leaveRequest.employee_last_name}`
                             } />
                             <Detail label="Leave Type" text={leaveRequest.leave_type} />
                         </Box>
@@ -90,21 +132,51 @@ export default function LeaveRequest({ leaveRequest, history }: { leaveRequest: 
                             <Detail label="End Date" text={leaveRequest.end_date} />
                         </Box>
                         <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
-                            <Detail label="Duration" text={calculateLeaveDuration(leaveRequest).toString()} />
+                            {/* NEW: Use the smart formatDurationDetails function */}
+                            <Detail label="Duration" text={formatDurationDetails(leaveRequest)} />
                             <Detail label="Status" text={leaveRequest.latest_status} />
                         </Box>
                         <Box sx={{ display: "grid", gridTemplateColumns: "1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
-                            <Detail label="Reason" text={leaveRequest.reason} />
+                            {/* FIXED: Use snake_case (reason was already correct) */}
+                            <Detail label="Reason" text={leaveRequest.reason || "N/A"} />
                         </Box>
 
+                        {/* FIXED: Use snake_case */}
                         {leaveRequest.latest_status === "Rejected" && (
                             <Box sx={{ display: "grid", gridTemplateColumns: "1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
-                                <Detail label="Supervisor's Reason" text={leaveRequest.rejectionReason || "N/A"} />
+                                <Detail label="Supervisor's Reason" text={leaveRequest.reject_reason || "N/A"} />
                             </Box>
                         )}
 
+                        {/* === NEW ATTACHMENT SECTION === */}
+                        {attachments && attachments.length > 0 && (
+                            <Box sx={{ paddingLeft: "30px", my: "20px" }}>
+                                <Typography variant="h6" gutterBottom>Attachments</Typography>
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                    {attachments.map((file) => (
+                                        <Button
+                                            key={file.attachment_id}
+                                            component="a" // Makes the button a link
+                                            href={file.url}      // The URL from your mock data
+                                            target="_blank"     // Opens in a new tab
+                                            rel="noopener noreferrer" // Security best practice
+                                            variant="outlined"
+                                            startIcon={<ArticleOutlinedIcon />}
+                                            sx={{
+                                                textTransform: 'none', // Keeps file name capitalization
+                                                justifyContent: 'flex-start'
+                                            }}
+                                        >
+                                            {file.name}
+                                        </Button>
+                                    ))}
+                                </Box>
+                            </Box>
+                        )}
+                        {/* === END OF ATTACHMENT SECTION === */}
 
-                        {/* === DIALOG CODE UPDATED === */}
+
+                        {/* === DIALOG CODE (already correct) === */}
                         <React.Fragment>
                             {canRevoke && (
                                 <Box sx={{ paddingLeft: "30px", my: "20px" }}>
@@ -116,7 +188,7 @@ export default function LeaveRequest({ leaveRequest, history }: { leaveRequest: 
 
                             <Dialog
                                 open={open}
-                                onClose={handleClose} // Use handleClose to reset state on backdrop click
+                                onClose={handleClose}
                             >
                                 <DialogTitle id="alert-dialog-title">
                                     {"Confirm Request Revocation"}
@@ -125,7 +197,6 @@ export default function LeaveRequest({ leaveRequest, history }: { leaveRequest: 
                                     <DialogContentText id="alert-dialog-description" sx={{ mb: 2 }}>
                                         Are you sure you want to revoke this approved leave request? Please provide a reason below.
                                     </DialogContentText>
-                                    {/* 5. Add the TextField */}
                                     <TextField
                                         autoFocus
                                         required
@@ -135,7 +206,7 @@ export default function LeaveRequest({ leaveRequest, history }: { leaveRequest: 
                                         label="Reason for Revocation"
                                         type="text"
                                         fullWidth
-                                        variant="outlined" // Switched to outlined for better visibility
+                                        variant="outlined"
                                         value={revokeReason}
                                         onChange={(e) => setRevokeReason(e.target.value)}
                                         multiline
@@ -143,12 +214,11 @@ export default function LeaveRequest({ leaveRequest, history }: { leaveRequest: 
                                     />
                                 </DialogContent>
                                 <DialogActions>
-                                    {/* 6. Update Buttons */}
                                     <Button onClick={handleClose}>Cancel</Button>
                                     <Button
                                         onClick={handleRevokeSubmit}
                                         color="warning"
-                                        disabled={!revokeReason} // Button is disabled if no reason
+                                        disabled={!revokeReason}
                                     >
                                         Revoke
                                     </Button>
@@ -164,3 +234,4 @@ export default function LeaveRequest({ leaveRequest, history }: { leaveRequest: 
         </Box>
     );
 }
+

@@ -69,23 +69,24 @@ export default function Employees({
 
     // 3. Filter by Search Text (on the result of the above)
     if (searchText) {
-      // Lowercase the search text once
       const lowerSearchText = searchText.toLowerCase();
-
+      
+      // --- UPDATED SEARCH LOGIC ---
       rows = rows.filter((row) => {
-        // --- FIXED SEARCH LOGIC ---
-        // 1. Create a combined full name to check against
         const fullName = `${row.first_name} ${row.last_name}`.toLowerCase();
-        if (fullName.includes(lowerSearchText)) {
-          return true;
-        }
 
-        // 2. If full name doesn't match, check all other values
-        return Object.values(row).some(value =>
-          value && value.toString().toLowerCase().includes(lowerSearchText)
-        );
-        // --- END OF FIX ---
+        // Check only the fields we care about
+        const isMatch = 
+          row.employee_id.toString().includes(lowerSearchText) ||
+          fullName.includes(lowerSearchText) ||
+          row.email.toLowerCase().includes(lowerSearchText) ||
+          row.division.toLowerCase().includes(lowerSearchText) ||
+          row.department.toLowerCase().includes(lowerSearchText) ||
+          row.position.toLowerCase().includes(lowerSearchText);
+        
+        return isMatch;
       });
+      // --- END OF UPDATED LOGIC ---
     }
 
     return rows;

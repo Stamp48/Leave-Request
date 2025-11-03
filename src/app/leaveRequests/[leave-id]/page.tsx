@@ -1,22 +1,33 @@
+// FIXED: Import from your 'camelCase' files
 import { mockLeaveRequests } from "@/app/lib/mockDataLeaveRequest";
 import LeaveRequest from "./LeaveRequestCSR";
-// 1. Import the status history and its type
-import { mockStatusHistory, StatusHistoryType } from "@/app/lib/mockStatusHistory";
+import { mockStatusHistory } from "@/app/lib/mockStatusHistory";
+// 1. Import mockAttachments (assuming this is the correct path)
+import { mockAttachments } from "@/app/lib/mockAttachment";
 
 export default function LeaveRequestPage({ params }: { params: { "leave-id": string } }) {
-    const leaveId = params["leave-id"];
+    const leaveId = params["leave-id"]; // This is a string, e.g., "5"
+
+    // Find request
     const leaveRequest = mockLeaveRequests.find(lr => lr.request_id.toString() === leaveId);
 
     if (!leaveRequest) return <h1>Leave Request not found</h1>;
 
-    // 2. Filter the history list for this specific request ID
+    // Filter history
     const requestHistory = mockStatusHistory
-        .filter(item => item.requestId.toString() === leaveId)
+        .filter(item => item.request_id.toString() === leaveId)
         .sort((a, b) =>
-            // Sort by most recent update first
             new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
         );
 
-    // 3. Pass the new 'history' prop
-    return <LeaveRequest leaveRequest={leaveRequest} history={requestHistory} />;
+    // 2. NEW: Filter the attachments list
+    const requestAttachments = mockAttachments
+        .filter(item => item.request_id.toString() === leaveId);
+
+    // 3. Pass all three props
+    return <LeaveRequest
+        leaveRequest={leaveRequest}
+        history={requestHistory}
+        attachments={requestAttachments} // Pass the filtered list
+    />;
 }

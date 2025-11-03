@@ -1,3 +1,7 @@
+
+export type LeaveStatus = 'Pending' | 'Approved' | 'Rejected' | 'Canceled' | 'Modified' | 'Revoked';
+
+
 export interface LeaveRequestType {
   // Joined Employee Data (as requested)
   employee_id: number;
@@ -14,7 +18,7 @@ export interface LeaveRequestType {
   start_date: string;       // Changed from 'time' to 'string' (YYYY-MM-DD)
   end_date: string;         // Changed from 'time' to 'string' (YYYY-MM-DD)
   reason: string | null;    // Changed to allow null (for Go *string)
-  latest_status: 'Pending' | 'Approved' | 'Rejected' | 'Canceled' | 'Modified' | 'Revoked'; // FIXED: Added 'Revoked'
+  latest_status: LeaveStatus; // FIXED: Added 'Revoked'
   reject_reason: string | null; // Changed to allow null (for Go *string)
   is_half_day: boolean | null;    // Changed to allow null (for Go *bool)
   is_morning: boolean | null;     // (for Go *bool)
@@ -22,6 +26,7 @@ export interface LeaveRequestType {
   is_last_half_day: boolean | null;  // Changed to allow null (for Go *bool)
   latest_timestamp: string; // Changed from 'time' to 'string' (ISO 8601)
 }
+
 
 
 

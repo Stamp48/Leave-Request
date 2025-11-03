@@ -65,8 +65,12 @@ export default function EmployeeDetail({ employee, handleClickOpen, handleClose,
 
         </CardContent>
         <CardActions>
-          <Box sx={{ paddingLeft: "25px" }}>
-            <Button variant="outlined" size="small" sx={{ marginRight: "7.5px" }} onClick={() => router.push(`/employees/${employee.employee_id}/edit`)}>Edit</Button>
+          <Box sx={{ paddingLeft: "25px" , paddingBottom:"25px"}}>
+            <Button variant="outlined"
+              size="small" sx={{ marginRight: "7.5px"  }}
+              onClick={() => router.push(`/employees/${employee.employee_id}/edit`)}>
+              Edit
+            </Button>
             <React.Fragment>
               <Button variant="outlined" color="error" size="small" onClick={handleClickOpen}>
                 Delete

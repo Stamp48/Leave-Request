@@ -19,7 +19,7 @@ export default function EmployeePage({ params }: { params: { "emp-id": string } 
   // We MUST filter for 'Pending' here, as it's the only way to know
   // this employee *started* the request.
   const originatingRequests = mockStatusHistory.filter(
-    item => item.employeeId === employee.employee_id && item.status === 'Pending'
+    item => item.employee_id === employee.employee_id && item.status === 'Pending'
   );
 
   // STEP 2: Sort these originating requests by date to find the newest ones.
@@ -30,12 +30,12 @@ export default function EmployeePage({ params }: { params: { "emp-id": string } 
   // STEP 3: Get the 5 most recent request IDs
   const latest5RequestIds = originatingRequests
     .slice(0, 5)
-    .map(req => req.requestId);
+    .map(req => req.request_id);
 
   // STEP 4: Get the *full history* (all statuses) for those 5 IDs.
   // Notice this filter does NOT check for 'Pending'.
   const leavHistList = mockStatusHistory
-    .filter(item => latest5RequestIds.includes(item.requestId))
+    .filter(item => latest5RequestIds.includes(item.request_id))
     .sort((a, b) =>
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );

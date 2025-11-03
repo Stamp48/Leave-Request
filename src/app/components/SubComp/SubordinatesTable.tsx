@@ -17,7 +17,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 // FIXED: Updated import path and type
-import { EmployeeType } from '@/app/lib/mockDataEmp'; 
+import { EmployeeType } from '@/app/lib/mockDataEmp';
 import Avatar from '@mui/material/Avatar';
 import { useRouter } from 'next/navigation';
 import AddIcon from '@mui/icons-material/Add';
@@ -25,7 +25,7 @@ import AddIcon from '@mui/icons-material/Add';
 
 // ... (Column definition remains the same) ...
 interface Column {
-    id: keyof EmployeeType | 'fullName'; 
+    id: keyof EmployeeType | 'fullName';
     label: string;
     minWidth?: number;
     align?: 'right';
@@ -87,7 +87,7 @@ function EnhancedTableToolbar(
     return (
         <Toolbar
             // ... (sx props) ...
-             sx={[
+            sx={[
                 {
                     pl: { sm: 2 },
                     pr: { xs: 1, sm: 1 },
@@ -131,21 +131,21 @@ function EnhancedTableToolbar(
 
 // NEW: Define all the props being passed from the parent
 interface SubordinatesTableProps {
-  rows: EmployeeType[];
-  currEmployee: EmployeeType;
-  onDelete: () => void;
-  selected: readonly number[];
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onRowClick: (event: React.MouseEvent<unknown>, id: number) => void;
+    rows: EmployeeType[];
+    currEmployee: EmployeeType;
+    onDelete: () => void;
+    selected: readonly number[];
+    onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onRowClick: (event: React.MouseEvent<unknown>, id: number) => void;
 }
 
-export default function SubordinatesTable({ 
-  rows, 
-  currEmployee, 
-  onDelete,
-  selected, // Use prop
-  onSelectAllClick, // Use prop
-  onRowClick // Use prop
+export default function SubordinatesTable({
+    rows,
+    currEmployee,
+    onDelete,
+    selected, // Use prop
+    onSelectAllClick, // Use prop
+    onRowClick // Use prop
 }: SubordinatesTableProps) { // Use the new interface
 
     const router = useRouter();
@@ -153,7 +153,7 @@ export default function SubordinatesTable({
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-    
+
     // REMOVED: handleSelectAllClick (moved to parent)
 
     // REMOVED: handleClick (moved to parent)
@@ -182,10 +182,10 @@ export default function SubordinatesTable({
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
                 {/* FIXED: Pass the correct props to the toolbar */}
-                <EnhancedTableToolbar 
-                  numSelected={selected.length} // Use prop
-                  currEmployee={currEmployee} 
-                  onDelete={onDelete} // Use prop
+                <EnhancedTableToolbar
+                    numSelected={selected.length} // Use prop
+                    currEmployee={currEmployee}
+                    onDelete={onDelete} // Use prop
                 />
                 <TableContainer>
                     <Table
@@ -206,11 +206,11 @@ export default function SubordinatesTable({
                                 return (
                                     <TableRow
                                         hover
-                                        onClick={() => router.push(`/employees/${row.employee_id}`)} 
+                                        onClick={() => router.push(`/employees/${row.employee_id}`)}
                                         role="checkbox"
                                         aria-checked={isItemSelected}
                                         tabIndex={-1}
-                                        key={row.employee_id} 
+                                        key={row.employee_id}
                                         selected={isItemSelected}
                                         sx={{ cursor: 'pointer' }}
                                     >
@@ -219,10 +219,10 @@ export default function SubordinatesTable({
                                                 color="primary"
                                                 checked={isItemSelected}
                                                 // FIXED: Use onRowClick prop
-                                                onClick={(e) => { 
-                                                    e.stopPropagation(); 
-                                                    onRowClick(e as React.MouseEvent<unknown>, row.employee_id); 
-                                                }} 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onRowClick(e as React.MouseEvent<unknown>, row.employee_id);
+                                                }}
                                                 inputProps={{
                                                     'aria-labelledby': labelId,
                                                 }}
@@ -235,9 +235,13 @@ export default function SubordinatesTable({
                                             scope="row"
                                             align='left'
                                         >
-                                            <Avatar src={row.profile_picture} alt={`${row.first_name} ${row.last_name}`} />
+                                            <Avatar
+                                                src={row.profile_picture}
+                                                alt={`${row.first_name} ${row.last_name}`}
+                                                sx={{ width: 55, height: 55 }}
+                                            />
                                         </TableCell>
-                                        <TableCell align="left">{row.first_name} {row.last_name}</TableCell> 
+                                        <TableCell align="left">{row.first_name} {row.last_name}</TableCell>
                                         <TableCell align="left">{row.email}</TableCell>
                                         <TableCell align="left">{row.division}</TableCell>
                                         <TableCell align="left">{row.department}</TableCell>
@@ -251,7 +255,7 @@ export default function SubordinatesTable({
                                     }}
                                 >
                                     <TableCell colSpan={6} />
-                                 </TableRow>
+                                </TableRow>
                             )}
                         </TableBody>
                     </Table>

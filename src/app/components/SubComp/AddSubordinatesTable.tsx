@@ -16,7 +16,7 @@ import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 // FIXED: Import correct EmployeeType
-import { EmployeeType } from '@/app/lib/mockDataEmp'; 
+import { EmployeeType } from '@/app/lib/mockDataEmp';
 import Avatar from '@mui/material/Avatar';
 import { useRouter } from 'next/navigation';
 
@@ -117,28 +117,25 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 
 // NEW: Define all props passed from the parent
 interface AddSubordinatesTableProps {
-  rows: EmployeeType[];
-  currEmployee: EmployeeType;
-  selected: readonly number[];
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onRowClick: (event: React.MouseEvent<unknown>, id: number) => void;
+    rows: EmployeeType[];
+    currEmployee: EmployeeType;
+    selected: readonly number[];
+    onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onRowClick: (event: React.MouseEvent<unknown>, id: number) => void;
 }
 
-export default function AddSubordinatesTable({ 
-    rows, 
+export default function AddSubordinatesTable({
+    rows,
     currEmployee,
     selected,
     onSelectAllClick,
-    onRowClick 
+    onRowClick
 }: AddSubordinatesTableProps) { // Use new interface
 
     const router = useRouter();
-    // REMOVED: Local 'selected' state
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-    // REMOVED: handleSelectAllClick
-    // REMOVED: handleClick
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
@@ -198,9 +195,9 @@ export default function AddSubordinatesTable({
                                                 color="primary"
                                                 checked={isItemSelected}
                                                 // FIXED: Use onRowClick prop and employee_id
-                                                onClick={(e) => { 
-                                                    e.stopPropagation(); 
-                                                    onRowClick(e as React.MouseEvent<unknown>, row.employee_id); 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onRowClick(e as React.MouseEvent<unknown>, row.employee_id);
                                                 }}
                                                 inputProps={{
                                                     'aria-labelledby': labelId,
@@ -214,7 +211,11 @@ export default function AddSubordinatesTable({
                                             align='left'
                                         >
                                             {/* FIXED: Use correct prop names */}
-                                            <Avatar src={row.profile_picture} alt={`${row.first_name} ${row.last_name}`} />
+                                            <Avatar
+                                                src={row.profile_picture}
+                                                alt={`${row.first_name} ${row.last_name}`}
+                                                sx={{ width: 55, height: 55 }}
+                                            />
                                         </TableCell>
                                         <TableCell align="left">{row.first_name} {row.last_name}</TableCell>
                                         <TableCell align="left">{row.email}</TableCell>

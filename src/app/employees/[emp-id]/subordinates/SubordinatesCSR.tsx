@@ -11,24 +11,24 @@ import { EmployeeType } from "@/app/lib/mockDataEmp";
 import SubordinatesTable from "@/app/components/SubComp/SubordinatesTable";
 import { useRouter } from "next/navigation";
 
-export default function Subordinates({ 
-  initialRows, 
+export default function Subordinates({
+  initialRows,
   currEmployee,
   departmentsInDivision // NEW: Accept prop from server
-}: { 
-  initialRows: EmployeeType[], 
+}: {
+  initialRows: EmployeeType[],
   currEmployee: EmployeeType,
   departmentsInDivision: string[] // NEW
 }) {
   const [searchText, setSearchText] = useState("");
   // NEW: State for the department filter
-  const [selectedDepartment, setSelectedDepartment] = useState(""); 
+  const [selectedDepartment, setSelectedDepartment] = useState("");
   const router = useRouter();
 
   const [subordinatesRows, setSubordinatesRows] = useState(initialRows);
   const [selected, setSelected] = useState<readonly number[]>([]);
 
-  const handleDelete = () => { 
+  const handleDelete = () => {
     const newRows = subordinatesRows.filter(row => !selected.includes(row.employee_id));
     setSubordinatesRows(newRows);
     setSelected([]);
@@ -62,7 +62,7 @@ export default function Subordinates({
     }
     setSelected(newSelected);
   };
-  
+
   // NEW: Handler for the department dropdown
   const handleDepartmentChange = (event: SelectChangeEvent<string>) => {
     setSelectedDepartment(event.target.value);
@@ -87,12 +87,18 @@ export default function Subordinates({
           return true;
         }
         // Check all other values (safely)
-        return Object.values(row).some(value =>
-          value && value.toString().toLowerCase().includes(lowerSearchText)
-        );
+        const isMatch =
+          row.employee_id.toString().includes(lowerSearchText) ||
+          fullName.includes(lowerSearchText) ||
+          row.email.toLowerCase().includes(lowerSearchText) ||
+          row.division.toLowerCase().includes(lowerSearchText) ||
+          row.department.toLowerCase().includes(lowerSearchText) ||
+          row.position.toLowerCase().includes(lowerSearchText);
+
+        return isMatch;
       });
     }
-    
+
     return rows;
   }, [subordinatesRows, selectedDepartment, searchText]);
 
@@ -110,7 +116,7 @@ export default function Subordinates({
           {/* (Empty box for alignment) */}
         </Box>
         <Box sx={{ flex: 5, display: "flex", justifyContent: "flex-end" }}>
-          
+
           {/* NEW: Department Filter Dropdown */}
           <FormControl sx={{ minWidth: 200, mr: 1 }}>
             <InputLabel id="department-filter-label">Filter by Department</InputLabel>
@@ -131,7 +137,7 @@ export default function Subordinates({
               ))}
             </Select>
           </FormControl>
-          
+
           <SearchBar
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
