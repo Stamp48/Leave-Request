@@ -21,15 +21,14 @@ export default function Calendar({ initialRows }: { initialRows: LeaveRequestTyp
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", marginBottom: "100px" }}>
-            <Box sx={{ flex: 1, bgcolor: "primary.main", display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
-                <Typography variant="h3" color="white">
+            <Box sx={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
+                <Typography variant="h3" color="primary.main">
                     Team Leave
                 </Typography>
             </Box>
 
             <Box sx={{
                 flex: 5,
-                bgcolor: "secondary.main",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -47,14 +46,14 @@ export default function Calendar({ initialRows }: { initialRows: LeaveRequestTyp
                     className="rounded-lg border"
                 />
 
-                <Typography variant="body1" color="white" sx={{ mt: 2, p: 1, bgcolor: 'rgba(0,0,0,0.2)', borderRadius: 1 }}>
+                <Typography variant="body1" color="white" sx={{ mt: 2, p: 1, bgcolor: '#2E8EE4', borderRadius: 1 }}>
                     Selected range: {" "}
                     {date?.from ? format(date.from, "PPP") : "Start Date"} -{" "}
                     {date?.to ? format(date.to, "PPP") : "End Date"}
                 </Typography>
             </Box>
 
-            <Box sx={{ flex: 1, flexDirection: "column", bgcolor: "success.main", display: "flex", alignItems: "start", justifyContent: "center", paddingX: "3rem", paddingY: "1rem" }}>
+            <Box sx={{ flex: 1, flexDirection: "column", display: "flex", alignItems: "start", justifyContent: "center", paddingX: "3rem", paddingY: "1rem" }}>
                 <Typography variant="h4" color="white" sx={{ paddingBottom: "1rem" }}>
                     Approved Leave Requests
                 </Typography>

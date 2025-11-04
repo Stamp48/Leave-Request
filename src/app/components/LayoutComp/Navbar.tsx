@@ -7,14 +7,14 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
+// REMOVED: Container
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 
-const settings = ['Profile', 'Logout'];
+const settings = ['Logout'];
 
 export default function NavBar() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -30,9 +30,19 @@ export default function NavBar() {
   };
 
   return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{ justifyContent:"flex-end"}}>
+    // FIXED: Added position="static" back. This tells the AppBar
+    // to respect its parent "fixed" Box from MuiProvider.
+    <AppBar position="static" sx={{background: "linear-gradient(to left, #1976d2, #42a5f5)"}}>
+      {/* REMOVED: The <Container> that was adding unwanted padding */}
+      
+      {/* FIXED: Added padding (px) directly to the Toolbar */}
+      <Toolbar 
+        disableGutters 
+        sx={{ 
+          justifyContent:"flex-end", 
+          px: 2 // Add some padding so the avatar isn't at the edge
+        }}
+      >
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -63,7 +73,6 @@ export default function NavBar() {
             </Menu>
           </Box>
         </Toolbar>
-      </Container>
     </AppBar>
   );
 }

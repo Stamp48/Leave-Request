@@ -1,3 +1,4 @@
+"use client"
 import * as React from "react";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -17,57 +18,79 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs";
 import UploadAvatars from "../UploadAvatar";
 import { EmployeeType } from "@/app/lib/mockDataEmp";
+// NEW: Import PositionType. Adjust path if needed (e.g., /mockDataPos)
+import { PositionType } from "@/app/lib/mockPosition";
 
-
+/**
+ * FIXED: This FormData interface now matches the parent component's state.
+ */
 interface FormData {
-    id: number;
-    firstname: string;
-    lastname: string;
-    username: string;
+    employee_id: number;
+    first_name: string;
+    last_name: string;
     email: string;
-    department: string;
     division: string;
+    department: string;
     position: string;
     phone: string;
-    hireDate: string;
-    birthDate: string;
+    hire_date: string;
+    birth_date: string;
+    supervisor_id: number | null;
     address: string;
-    avatarUrl: string;
-    supervisorId?: number;
+    profile_picture: string;
 }
 
+/**
+ * FIXED: The props interface is updated to match the parent component.
+ */
 interface EmployeeEditProps {
     formData: FormData;
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    departmentData: Record<string, string[]>;
-    availableDivisions: string[];
-    handleDepartmentChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+
+    // This prop is the list of top-level divisions: ["Division1", "Division2"]
+    allDivisions: string[];
+    // This prop is the list of depts for the *selected* division: ["Dept1", "Dept2"]
+    availableDepartments: string[];
+    // This is the handler for the DIVISION dropdown
+    handleDivisionChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleChangeDate: (name: string, date: any) => void;
     errors: Record<string, string>;
     handleAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    supervisorsInDept: EmployeeType[]; // array of employee objects
+    supervisorsInDept: EmployeeType[]; // This is supervisors in the division
+    // NEW: Add the prop for all positions
+    allPositions: PositionType[];
 }
 
-
-
-
-
-export default function EmployeeEdit({ formData, handleChange, departmentData, supervisorsInDept, availableDivisions, handleDepartmentChange, handleChangeDate, errors, handleAvatarChange }: EmployeeEditProps) {
+/**
+ * FIXED: This component now renders the edit fields with the correct
+ * Division > Department logic.
+ */
+export default function EmployeeEdit({
+    formData,
+    handleChange,
+    allDivisions,
+    availableDepartments,
+    handleDivisionChange,
+    handleChangeDate,
+    errors,
+    handleAvatarChange,
+    supervisorsInDept,
+    allPositions // NEW: Destructure the new prop
+}: EmployeeEditProps) {
     const router = useRouter();
     return (
         <>
-
             <Card sx={{ flexGrow: 1, boxShadow: 3, borderRadius: 2 }}>
                 <CardHeader
-                    // ... (avatar and other header details using formData)
-                    avatar={<UploadAvatars srcImg={formData.avatarUrl} width={150} height={150} handleAvatarChange={handleAvatarChange} />}
-
-                    title={<Typography variant="h4">{formData.firstname} {formData.lastname}</Typography>}
-
+                    // FIXED: Use correct formData keys
+                    sx={{ paddingLeft: "35px" }}
+                    avatar={<UploadAvatars srcImg={formData.profile_picture} width={150} height={150} handleAvatarChange={handleAvatarChange} />}
+                    title={<Typography variant="h4">{formData.first_name} {formData.last_name}</Typography>}
                     subheader={
                         <Box>
                             <Typography variant="subtitle1">{formData.position}</Typography>
-                            <Typography variant="subtitle2">Employee ID: {formData.id}</Typography>
+                            {/* FIXED: Use correct formData key */}
+                            <Typography variant="subtitle2">Employee ID: {formData.employee_id}</Typography>
                         </Box>
                     }
                 />
@@ -75,19 +98,18 @@ export default function EmployeeEdit({ formData, handleChange, departmentData, s
                 <CardContent>
                     <Typography variant="h5" sx={{ marginLeft: "25px" }}>Personal Information</Typography>
 
-                    {/* Change Detail components to editable TextField components */}
                     <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
                         <TextField
                             label="First Name"
-                            name="firstname" /* The 'name' must match the key in your state */
-                            value={formData.firstname} /* Display the value from the state */
-                            onChange={handleChange} /* Call the parent's function on change */
+                            name="first_name" // FIXED: Key
+                            value={formData.first_name} // FIXED: Key
+                            onChange={handleChange}
                             variant="outlined"
                         />
                         <TextField
                             label="Last Name"
-                            name="lastname"
-                            value={formData.lastname}
+                            name="last_name" // FIXED: Key
+                            value={formData.last_name} // FIXED: Key
                             onChange={handleChange}
                             variant="outlined"
                         />
@@ -101,98 +123,112 @@ export default function EmployeeEdit({ formData, handleChange, departmentData, s
                             onChange={handleChange}
                             variant="outlined"
                         />
+                        {/* NEW: Changed Position to a dropdown */}
                         <TextField
-                            label="Username"
-                            name="username"
-                            value={formData.username}
+                            select
+                            required
+                            label="Position"
+                            name="position"
+                            value={formData.position}
                             onChange={handleChange}
-                            variant="outlined"
-                        />
+                            fullWidth
+                            error={!!errors.position}
+                            helperText={errors.position || "Please select a position"}
+                        >
+                            {allPositions.map((pos) => (
+                                <MenuItem key={pos.position_id} value={pos.name}>
+                                    {pos.name}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                     </Box>
 
+                    {/* --- LOGIC FLIPPED --- */}
                     <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
                         <TextField
                             select
                             required
-                            label="Department"
-                            name="department"
-                            value={formData.department}
-                            onChange={handleDepartmentChange}
-                            fullWidth
-                            error={!!errors.department}
-                            helperText={errors.department || "Please select a department"}
-                        >
-                            {Object.keys(departmentData).map((departmentName) => (
-                                <MenuItem key={departmentName} value={departmentName}>
-                                    {departmentName}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-
-                        <TextField
-                            select
-                            required
-                            label="Division"
+                            label="Division" // FIXED: Division comes first
                             name="division"
                             value={formData.division}
-                            onChange={handleChange}
-                            error={!!errors.division}
-
-
-                            disabled={!formData.department}
-
-                            helperText={!formData.department ? "Please select a department first" : "Please select a division"}
+                            onChange={handleDivisionChange} // FIXED: Use division handler
                             fullWidth
+                            error={!!errors.division}
+                            helperText={errors.division || "Please select a division"}
                         >
-
-                            {availableDivisions.map((divisionName) => (
+                            {/* FIXED: Iterate over allDivisions */}
+                            {allDivisions.map((divisionName) => (
                                 <MenuItem key={divisionName} value={divisionName}>
                                     {divisionName}
                                 </MenuItem>
                             ))}
                         </TextField>
+
+                        <TextField
+                            select
+                            required
+                            label="Department" // FIXED: Department comes second
+                            name="department"
+                            value={formData.department}
+                            onChange={handleChange} // FIXED: Use general handler
+                            error={!!errors.department}
+                            disabled={!formData.division} // FIXED: Disabled if no division
+                            helperText={!formData.division ? "Please select a division first" : "Please select a department"}
+                            fullWidth
+                        >
+                            {/* FIXED: Iterate over availableDepartments */}
+                            {availableDepartments.map((deptName) => (
+                                <MenuItem key={deptName} value={deptName}>
+                                    {deptName}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                     </Box>
 
                     <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
-                        <TextField
-                            label="Position"
-                            name="position"
-                            type="text"
-                            value={formData.position}
-                            onChange={handleChange}
-                            variant="outlined"
-                        />
+
                         <TextField
                             select
                             label="Supervisor"
-                            name="supervisorId"
-                            value={formData.supervisorId || ""}
+                            name="supervisor_id" // FIXED: Key
+                            value={formData.supervisor_id || ""} // FIXED: Key
                             onChange={handleChange}
                             fullWidth
                         >
                             {supervisorsInDept
-                                .filter(sup => sup.id !== formData.id) // First, remove the current employee
-                                .map(sup => (                           // Then, map over the filtered list
-                                    <MenuItem key={sup.id} value={sup.id}>
-                                        {`${sup.firstname} ${sup.lastname}`}
+                                // FIXED: Use correct key for filter
+                                .filter(sup => sup.employee_id !== formData.employee_id)
+                                .map(sup => (
+                                    <MenuItem key={sup.employee_id} value={sup.employee_id}>
+                                        {`${sup.first_name} ${sup.last_name}`}
                                     </MenuItem>
                                 ))
                             }
                         </TextField>
+
+                        <TextField
+                            label="Address"
+                            name="address"
+                            type="text"
+                            value={formData.address}
+                            onChange={handleChange}
+                            variant="outlined"
+                        />
+
                     </Box>
 
                     <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                                 label="Birth Date"
-                                name="birthDate"
-                                value={formData.birthDate ? dayjs(formData.birthDate) : null}
-                                onChange={(date) => handleChangeDate("birthDate", date)}
+                                name="birth_date" // FIXED: Key
+                                value={formData.birth_date ? dayjs(formData.birth_date) : null} // FIXED: Key
+                                onChange={(date) => handleChangeDate("birth_date", date)} // FIXED: Key
                                 slotProps={{
                                     textField: {
                                         required: true,
-                                        error: Boolean(errors.birthDate),
-                                        helperText: errors.birthDate ? errors.birthDate : ""
+                                        error: Boolean(errors.birth_date), // FIXED: Key
+                                        helperText: errors.birth_date ? errors.birth_date : "" // FIXED: Key
                                     },
                                 }}
                             />
@@ -208,20 +244,10 @@ export default function EmployeeEdit({ formData, handleChange, departmentData, s
 
                     </Box>
 
-                    <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
-                        <TextField
-                            label="Address"
-                            name="address"
-                            type="text"
-                            value={formData.address}
-                            onChange={handleChange}
-                            variant="outlined"
-                        />
-                    </Box>
-
                 </CardContent>
 
             </Card>
         </>
     );
 }
+

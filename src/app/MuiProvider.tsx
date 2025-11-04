@@ -18,16 +18,22 @@ export default function MuiProvider({ children }: { children: React.ReactNode })
 
         {/* Main section (navbar + content) */}
         <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+          
           {/* Navbar */}
           <Box
             sx={{
               position: "fixed",
               top: 0,
-              left: `${drawerWidth - 1}px`,
-              width: `calc(100% - ${drawerWidth}px)`,
+              // FIXED: Start at the edge of the drawer
+              left: `${drawerWidth}px`, 
+              // FIXED: Go all the way to the right edge
+              right: 0, 
+              // REMOVED: This width calculation was causing the gap
+              // width: `calc(100% - ${drawerWidth}px)`, 
               zIndex: 1201, // above sidebar
             }}
           >
+            {/* The NavBar component in your Canvas is correct */}
             <NavBar />
           </Box>
 
@@ -47,3 +53,4 @@ export default function MuiProvider({ children }: { children: React.ReactNode })
     </ThemeProvider>
   );
 }
+

@@ -1,4 +1,9 @@
 import HomePage from "@/app/HomePageCSR"
+import { mockEmployees } from "./lib/mockDataEmp"
+// FIXED: Import mockDivisions (the top-level) instead of mockDepartments
+import { mockDivisions } from "./lib/mockDataDepDiv"
+// FIXED: Import from the new snake_case file path
+import { mockLeaveRequests } from "./lib/mockDataLeaveRequest"
 
 async function getLeaveRequests() {
   const res = await fetch('http://localhost:8080/api/leave-requests', {
@@ -24,31 +29,38 @@ async function getEmployees() {
   return res.json()
 }
 
-async function getDepartments() {
+// FIXED: Renamed function to get Divisions
+async function getDivisions() {
   const res = await fetch('http://localhost:8080/api/divisions', {
     cache: 'no-store'
   })
   
   if (!res.ok) {
-    throw new Error('Failed to fetch departments')
+    // FIXED: Corrected error message
+    throw new Error('Failed to fetch divisions')
   }
   
   return res.json()
 }
 
 export default async function Home() {
-  // ดึงข้อมูลจาก backend แบบ parallel
-  const [leaveRequests, employees, departments] = await Promise.all([
-    getLeaveRequests(),
-    getEmployees(),
-    getDepartments()
-  ])
+  // We'll keep the fetch logic, but as you requested,
+  // we will pass the mock data to the component for now.
+  
+  // FIXED: Renamed variable to 'divisions'
+  // const [leaveRequests, employees, divisions] = await Promise.all([
+  //   getLeaveRequests(),
+  //   getEmployees(),
+  //   getDivisions()
+  // ])
+  // console.log([leaveRequests, employees, divisions])
 
   return (
     <HomePage 
-      leaveRequests={leaveRequests} 
-      employees={employees} 
-      departments={departments}
+      leaveRequests={mockLeaveRequests} 
+      employees={mockEmployees} 
+      // FIXED: Pass 'divisions' prop with mockDivisions
+      divisions={mockDivisions}
     />
   )
 }

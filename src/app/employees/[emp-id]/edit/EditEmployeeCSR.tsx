@@ -7,90 +7,134 @@ import CardContent from "@mui/material/CardContent";
 import EmployeeCard from "@/app/components/EmployeeComp/EmployeeCard";
 import CardHeader from '@mui/material/CardHeader';
 import { useRouter } from "next/navigation";
-import { EmployeeType } from "@/app/employees/page";
+import { EmployeeType } from "@/app/lib/mockDataEmp";
 import Button from "@mui/material/Button";
 import EmployeeEdit from "@/app/components/EmployeeComp/EmployeeEdit";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react"; // Added useMemo
 import dayjs from "dayjs";
-import { useEffect } from "react";
+import { getSupervisorsByDivision } from "@/app/lib/utils";
+// Import PositionType, adjust path as needed
+import { PositionType } from "@/app/lib/mockPosition"; 
+// NEW: Import Paper for the sticky action bar
+import Paper from "@mui/material/Paper";
+
 
 interface FormData {
-    id: number;
-    firstname: string;
-    lastname: string;
-    username: string;
+    employee_id: number;
+    first_name: string;
+    last_name: string;
     email: string;
-    department: string;
     division: string;
+    department: string;
     position: string;
     phone: string;
-    hireDate: string;
-    birthDate: string;
-    supervisorId?: number;
+    hire_date: string;
+    birth_date: string;
+    supervisor_id: number | null;
     address: string;
-    avatarUrl: string;
+    profile_picture: string;
 }
 
-
-export default function EditEmployee({ employee, supervisor, isSupervisor, departmentData, supervisorsInDept }: { employee: EmployeeType, supervisor?: EmployeeType, isSupervisor: boolean, departmentData: Record<string, string[]>, supervisorsInDept: EmployeeType[] }) {
+/**
+ * Main component for editing an employee's details.
+ * LOGIC FIXED: Now assumes Division > Department hierarchy.
+ */
+export default function EditEmployee({
+    employee,
+    supervisor,
+    isSupervisor,
+    orgHierarchyData,
+    allEmployees,
+    allPositions // NEW: Accept allPositions prop
+}: {
+    employee: EmployeeType,
+    supervisor?: EmployeeType,
+    isSupervisor: boolean,
+    orgHierarchyData: Record<string, string[]>,
+    allEmployees: EmployeeType[],
+    allPositions: PositionType[] // NEW: Type for allPositions
+}) {
+    // --- ALL HOOKS MUST BE AT THE TOP ---
     const router = useRouter();
 
     const [formData, setFormData] = useState<FormData>({
-        id: employee.id,
-        firstname: employee.firstname,
-        lastname: employee.lastname,
-        username: employee.username,
+        employee_id: employee.employee_id,
+        first_name: employee.first_name,
+        last_name: employee.last_name,
         email: employee.email,
-        department: employee.department,
         division: employee.division,
+        department: employee.department,
         position: employee.position,
         phone: employee.phone,
-        hireDate: employee.hireDate,
-        birthDate: employee.birthDate,
+        hire_date: employee.hire_date,
+        birth_date: employee.birth_date,
         address: employee.address,
-        avatarUrl: employee.avatarUrl,
-        supervisorId: employee.supervisorId
+        profile_picture: employee.profile_picture,
+        supervisor_id: employee.supervisor_id
     });
 
     type Errors = Record<string, string>;
-
-
     const [errors, setErrors] = useState<Errors>({});
+
+    // This state now holds the departments available for the *selected* division
+    const [availableDepartments, setAvailableDepartments] = useState<string[]>([]);
+
+    // Use useMemo for derived values
+    const supervisorsInDiv = useMemo(() => {
+        return getSupervisorsByDivision(allEmployees, employee?.division || "");
+    }, [allEmployees, employee?.division]);
+
+    const allDivisions = useMemo(() => {
+        // Add fallback for safety during initial render
+        return Object.keys(orgHierarchyData || {});
+    }, [orgHierarchyData]);
+    
+    // FIXED: This hook now sets the *initial department list* based on the
+    // employee's *current division* when the component loads.
+    useEffect(() => {
+        if (employee.division && orgHierarchyData) {
+            // Set the initial list of departments based on the employee's division
+            setAvailableDepartments(orgHierarchyData[employee.division] || []);
+        }
+    }, [employee.division, orgHierarchyData]);
+    
+    // --- END OF HOOKS ---
+
 
     const validate = () => {
         const tempErrors: Errors = {};
-        if (!formData.firstname) tempErrors.firstname = "First name is required.";
-        if (!formData.lastname) tempErrors.lastname = "Last name is required.";
+        if (!formData.first_name) tempErrors.firstname = "First name is required.";
+        if (!formData.last_name) tempErrors.lastname = "Last name is required.";
         if (!formData.email) tempErrors.email = "Email is required.";
-        if (!formData.birthDate) tempErrors.birthDate = "Birth date is required.";
+        if (!formData.birth_date) tempErrors.birthDate = "Birth date is required.";
         if (!formData.department) tempErrors.department = "Department is required.";
         if (!formData.division) tempErrors.division = "Division is required.";
+        // NEW: Added validation for position
+        if (!formData.position) tempErrors.position = "Position is required.";
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
     };
 
-    const [availableDivisions, setAvailableDivisions] = useState<string[]>([employee.division]);
 
+    // RENAMED & FIXED: This function now handles the DIVISION change
+    const handleDivisionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedDivision = e.target.value;
 
-    useEffect(() => {
-        // Check if we have the necessary data
-        if (employee.department && departmentData) {
-            // Set the initial divisions based on the employee's current department
-            setAvailableDivisions(departmentData[employee.department] || []);
-        }
-    }, [employee, departmentData]);
+        // Get the new list of departments for the selected division
+        const newDepartments = orgHierarchyData[selectedDivision] || [];
 
-    const handleDepartmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedDept = e.target.value;
         setFormData({
             ...formData,
-            department: selectedDept,
-            division: "",
+            division: selectedDivision,
+            department: "", // Reset department, as the old one is no longer valid
+            position: "", // Also reset position if it's tied to department/division
         });
 
-        setAvailableDivisions(departmentData[selectedDept] || []);
+        // Update the state to populate the department dropdown
+        setAvailableDepartments(newDepartments);
     };
 
+    // This handler is for simple text inputs, including the Department dropdown
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -107,7 +151,7 @@ export default function EditEmployee({ employee, supervisor, isSupervisor, depar
             // Read the file as a data URL
             const reader = new FileReader();
             reader.onload = () => {
-                setFormData((prev) => ({ ...prev, avatarUrl: reader.result as string }));
+                setFormData((prev) => ({ ...prev, profile_picture: reader.result as string }));
             };
             reader.readAsDataURL(file);
         }
@@ -116,48 +160,99 @@ export default function EditEmployee({ employee, supervisor, isSupervisor, depar
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (validate()) {
-            // Here you would typically send formData to your backend API to update the employee record
+            // Here you would typically send formData to your backend API
             console.log("Updated Employee Data:", formData);
-            // After successful update, navigate back or show a success message
-            router.push(`/employees/${employee.id}`);
+            // After successful update, navigate back
+            router.push(`/employees/${employee.employee_id}`);
         }
     };
 
+    // Loading check (safe to do after hooks)
+    if (!orgHierarchyData || !allPositions) {
+        return <Typography>Loading organization data...</Typography>;
+    }
+
     return (
-
-        <Box  onSubmit={handleSubmit} component="form" sx={{ display: "flex", flexDirection: "column", gap: 4, padding: 4, backgroundColor: "#1976d2" }}>
-            <Typography variant="h3" color="white">
-                Edit Employee Detail
-            </Typography>
-
-            <Box sx={{ display: "flex" }}>
-                <EmployeeEdit
-                    formData={formData}
-                    handleChange={handleChange}
-                    departmentData={departmentData}
-                    supervisorsInDept={supervisorsInDept}
-                    availableDivisions={availableDivisions}
-                    handleDepartmentChange={handleDepartmentChange}
-                    handleChangeDate={handleChangeDate}
-                    errors={errors}
-                    handleAvatarChange={handleAvatarChange}
-                />
+        // The form tag is now on the main container
+        <Box 
+            onSubmit={handleSubmit} 
+            component="form" 
+            sx={{ 
+                display: "flex", 
+                flexDirection: "column", 
+                minHeight: "100vh", // Ensure it fills the screen
+                backgroundColor: "#2E8EE4" // FIXED: Reverted to blue background
+            }}
+        >
+            {/* 1. Header Area */}
+            <Box sx={{ p: 4, pb: 1 }}> {/* Reduced bottom padding */}
+                {/* FIXED: Reverted to white text */}
+                <Typography variant="h3" color="white"> 
+                    Edit Employee Detail
+                </Typography>
             </Box>
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    gap: 2,
+
+            {/* 2. Main Form Content Area */}
+            <Box sx={{ 
+                display: "flex", 
+                justifyContent: "center", // Center the card
+                px: 4, // Padding on the sides
+                pb: '120px' // Padding at the bottom to avoid sticky footer
+            }}>
+                {/* Constrain the width of the form card for better readability */}
+                <Box sx={{ width: '100%', maxWidth: '1200px', paddingTop:"20px"}}>
+                    <EmployeeEdit
+                        formData={formData}
+                        handleChange={handleChange}
+                        allDivisions={allDivisions}
+                        availableDepartments={availableDepartments}
+                        handleDivisionChange={handleDivisionChange}
+                        supervisorsInDept={supervisorsInDiv}
+                        handleChangeDate={handleChangeDate}
+                        errors={errors}
+                        handleAvatarChange={handleAvatarChange}
+                        allPositions={allPositions} // FIXED: Pass positions
+                    />
+                </Box>
+            </Box>
+
+            {/* 3. Sticky Action Bar at the bottom (Kept) */}
+            <Paper 
+                elevation={3} 
+                sx={{ 
+                    position: 'sticky', 
+                    bottom: 0, 
+                    zIndex: 1100, // Make sure it's on top
+                    backgroundColor: 'white'
                 }}
             >
-
-
-            </Box>
-            <Button type="submit" variant="contained">
-                Submit
-            </Button>
-
+                <Box 
+                    sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'flex-end', 
+                        gap: 2, 
+                        p: 2,
+                        // Constrain width and center it
+                        maxWidth: '1240px', // Match content width + padding
+                        mx: 'auto'
+                    }}
+                >
+                    <Button 
+                        variant="outlined" 
+                        color="secondary" 
+                        onClick={() => router.back()} // Good UX
+                    >
+                        Cancel
+                    </Button>
+                    <Button 
+                        type="submit" 
+                        variant="contained"
+                    >
+                        Save Changes
+                    </Button>
+                </Box>
+            </Paper>
         </Box>
     );
 }
+

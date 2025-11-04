@@ -85,12 +85,12 @@ export default function SearchBar({
     return (
         <Box
             sx={{
-                ...sx,
+                ...sx, 
             }}
         >
             <Search
                 sx={{
-                    backgroundColor: color,
+                    backgroundColor: "rgba(241, 241, 241, 1)",
                     "&:hover": {
                         backgroundColor: alpha(color, 0.8),
                     },

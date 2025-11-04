@@ -21,7 +21,7 @@ export const description = "A horizontal bar chart"
 // 1. Define the data type this component expects
 type BarChartProps = {
   data: {
-    department: string
+    division: string // FIXED: Changed from 'department'
     total: number
   }[]
 }
@@ -38,8 +38,10 @@ export function ChartBarHorizontal({ data }: BarChartProps) {
   return (
     <Card className="flex flex-col w-full max-w-sm h-[350px]">
       <CardHeader>
-        <CardTitle>Department Leave Requests</CardTitle>
-        <CardDescription>Total requests by department</CardDescription>
+        {/* FIXED: Title updated */}
+        <CardTitle>Division Leave Requests</CardTitle> 
+        {/* FIXED: Description updated */}
+        <CardDescription>Total requests by division</CardDescription> 
       </CardHeader>
       <CardContent>
         {/* 3. Use the "total" key in the config */}
@@ -55,7 +57,7 @@ export function ChartBarHorizontal({ data }: BarChartProps) {
             {/* 5. Use "total" as the dataKey */}
             <XAxis type="number" dataKey="total" hide />
             <YAxis
-              dataKey="department" // 6. Use "department" as the dataKey
+              dataKey="division" // 6. FIXED: Use "division" as the dataKey
               type="category"
               tickLine={false}
               tickMargin={10}

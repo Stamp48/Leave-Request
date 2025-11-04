@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -10,7 +11,7 @@ import TableRow from '@mui/material/TableRow';
 import Avatar from '@mui/material/Avatar';
 import { ReactNode } from 'react';
 import { useRouter } from "next/navigation";
-import { EmployeeType } from "@/app/employees/page";
+import { EmployeeType } from "@/app/lib/mockDataEmp";
 
 
 
@@ -24,12 +25,11 @@ interface Column {
 
 
 const columns: readonly Column[] = [
-  { id: 'avatarUrl', label: 'Profile', minWidth: 100 },
-  { id: 'firstname', label: 'Full Name', minWidth: 170 },
-  { id: 'username', label: 'Username', minWidth: 150 },
+  { id: 'profile_picture', label: 'Profile', minWidth: 100 },
+  { id: 'first_name', label: 'Full Name', minWidth: 170 },
   { id: 'email', label: 'Email', minWidth: 200 },
-  { id: 'department', label: 'Department', minWidth: 150 },
   { id: 'division', label: 'Division', minWidth: 150 },
+  { id: 'department', label: 'Department', minWidth: 150 },
 ];
 
 
@@ -59,11 +59,16 @@ export default function EmployeesTable({ rows }: { rows: EmployeeType[] }) {
     // like firstname and lastname.
 
     switch (column.id) {
-      case 'avatarUrl':
-        return <Avatar src={row.avatarUrl} alt={`${row.firstname} ${row.lastname}`} />;
+      case 'profile_picture':
+        return <Avatar 
+                  src={row.profile_picture} 
+                  alt={`${row.first_name} ${row.last_name}`} 
+                  // 1. FIXED: Make avatar slightly larger
+                  sx={{ width: 55, height: 55 }}
+                />;
 
-      case 'firstname':
-        return `${row.firstname} ${row.lastname}`;
+      case 'first_name':
+        return `${row.first_name} ${row.last_name}`;
 
       default:
         // Default case just returns the value as-is.
@@ -79,7 +84,13 @@ export default function EmployeesTable({ rows }: { rows: EmployeeType[] }) {
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
+                <TableCell 
+                  key={column.id} 
+                  align={column.align} 
+                  style={{ minWidth: column.minWidth }}
+                  // 2. FIXED: Add left padding to the profile pic header
+                  sx={column.id === 'profile_picture' ? { pl: 5 } : undefined}
+                >
                   {column.label}
                 </TableCell>
               ))}
@@ -90,14 +101,19 @@ export default function EmployeesTable({ rows }: { rows: EmployeeType[] }) {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
                 <TableRow
-                  key={row.id}
+                  key={row.employee_id}
                   hover
                   sx={{ cursor: "pointer" }}
-                  onClick={() => router.push(`/employees/${row.id}`)}>
+                  onClick={() => router.push(`/employees/${row.employee_id}`)}>
                   {columns.map((column) => {
                     // This is now much simpler and more readable!
                     return (
-                      <TableCell key={column.id} align={column.align}>
+                      <TableCell 
+                        key={column.id} 
+                        align={column.align}
+                        // 2. FIXED: Add left padding to the profile pic cell
+                        sx={column.id === 'profile_picture' ? { pl: 5 } : undefined}
+                      >
                         {formatValue(column, row)}
                       </TableCell>
                     );

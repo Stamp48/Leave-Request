@@ -36,8 +36,8 @@ export function ChartPieLabel({
   return (
     <Card className="flex flex-col w-full max-w-sm h-[350px]">
       <CardHeader className="items-center pb-0">
-        {/* 2. Update titles */}
-        <CardTitle>Leave by Department</CardTitle>
+        {/* 2. FIXED: Update titles */}
+        <CardTitle>Leave by Division</CardTitle>
         <CardDescription>Approved leave in selected period</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
