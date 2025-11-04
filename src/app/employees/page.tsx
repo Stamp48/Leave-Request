@@ -260,13 +260,29 @@ const initialRows: EmployeeType[] = [
     supervisorId: 2 // reports to Bob
   }
 ];
-// ...existing code...
+
+
+async function getEmployees() {
+  const res = await fetch('http://localhost:8080/api/employees', {
+    cache: 'no-store'
+  })
+  
+  if (!res.ok) {
+    throw new Error('Failed to fetch employees')
+  }
+  
+  return res.json()
+}
 
 
 export default async function EmployeesPage() {
 
+  const [employees] = await Promise.all([
+    getEmployees(),
+  ])
 
-  return <EmployeesCSR initialRows={initialRows} />;
+
+  return <EmployeesCSR initialRows={employees} />;
 }
 
 
