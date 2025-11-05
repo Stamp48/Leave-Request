@@ -1,5 +1,5 @@
-// FIXED: Import new snake_case type
-import { LeaveRequestType, LeaveStatus } from "@/app/lib/mockDataLeaveRequest"; 
+import { LeaveRequest } from "@/types/leaveRequest"; 
+import { LeaveStatus } from "@/types/leaveStatus";
 import { useRouter } from "next/navigation";
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -11,30 +11,28 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useState } from "react";
 import { ReactNode } from "react";
-// NEW: Import Chip for status colors
 import Chip from "@mui/material/Chip";
 
-
 interface Column {
-    // FIXED: Use correct keys from LeaveRequestType
-    id: keyof LeaveRequestType | 'employee_name'; // Use custom key for name
+    // FIXED: Use correct keys from LeaveRequest type
+    id: keyof LeaveRequest | 'employeeName'; // Use custom key for name
     label: string;
     minWidth?: number;
     align?: 'right';
 }
 
-// FIXED: Columns updated to snake_case and correct logic
+// FIXED: Columns updated to camelCase
 const columns: readonly Column[] = [
-    { id: 'request_id', label: 'Request ID', minWidth: 50 },
-    { id: 'employee_name', label: 'Employee', minWidth: 150 },
-    { id: 'employee_division_name', label: 'Division', minWidth: 150 },
-    { id: 'leave_type', label: 'Leave Type', minWidth: 100 },
-    { id: 'start_date', label: 'Start Date', minWidth: 100 },
-    { id: 'end_date', label: 'End Date', minWidth: 100 },
-    { id: 'latest_status', label: 'Status', minWidth: 100 },
+    { id: 'requestID', label: 'Request ID', minWidth: 50 },
+    { id: 'employeeName', label: 'Employee', minWidth: 150 },
+    { id: 'employeeDivisionName', label: 'Division', minWidth: 150 },
+    { id: 'leaveType', label: 'Leave Type', minWidth: 100 },
+    { id: 'startDate', label: 'Start Date', minWidth: 100 },
+    { id: 'endDate', label: 'End Date', minWidth: 100 },
+    { id: 'latestStatus', label: 'Status', minWidth: 100 },
 ];
 
-// NEW: Helper function to get a color for the status chip
+// This helper is already correct for the camelCase type
 const getStatusColor = (status: LeaveStatus) => {
   switch (status) {
     case 'Approved':
@@ -54,13 +52,12 @@ const getStatusColor = (status: LeaveStatus) => {
   }
 };
 
-export default function LeaveTable({ rows }: { rows: LeaveRequestType[] }) {
+export default function LeaveTable({ rows }: { rows: LeaveRequest[] }) { // FIXED: Use real type
 
     const router = useRouter();
-
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-
+    // ... (other state remains the same) ...
     const fixedTableHeight = 500;
     const rowHeight = 53; 
     const emptyRows =
@@ -72,26 +69,33 @@ export default function LeaveTable({ rows }: { rows: LeaveRequestType[] }) {
         setPage(0);
     };
 
-    // FIXED: formatValue function updated for new columns and status chip
-    const formatValue = (column: Column, row: LeaveRequestType): ReactNode => {
+    // FIXED: formatValue function updated for camelCase
+    const formatValue = (column: Column, row: LeaveRequest): ReactNode => {
         switch (column.id) {
-            case 'employee_name':
-                return `${row.employee_first_name} ${row.employee_last_name}`;
+            case 'employeeName':
+                // FIXED: Use camelCase
+                return `${row.employeeFirstName} ${row.employeeLastName}`;
             
-            case 'latest_status':
+            case 'latestStatus':
+                // FIXED: Use camelCase
                 return (
                     <Chip 
-                        label={row.latest_status}
-                        // Use any to allow dynamic color strings from getStatusColor
-                        color={getStatusColor(row.latest_status) as any}
+                        label={row.latestStatus} 
+                        color={getStatusColor(row.latestStatus) as any}
                         size="small"
                         sx={{ textTransform: 'capitalize' }}
                     />
                 );
+            
+            // FIXED: Format Date objects
+            case 'startDate':
+                return new Date(row.startDate).toLocaleDateString();
+            case 'endDate':
+                return new Date(row.endDate).toLocaleDateString();
 
             default:
-                // This will handle 'request_id', 'employeeDivisionName', 'leave_type', etc.
-                return row[column.id as keyof LeaveRequestType] as ReactNode;
+                // This will handle 'requestID', 'employeeDivisionName', 'leaveType'
+                return row[column.id as keyof LeaveRequest] as ReactNode;
         }
     };
 
@@ -102,12 +106,7 @@ export default function LeaveTable({ rows }: { rows: LeaveRequestType[] }) {
                     <TableHead>
                         <TableRow>
                             {columns.map((column) => (
-                                <TableCell 
-                                key={column.id} 
-                                align={column.align} 
-                                style={{ minWidth: column.minWidth }}
-                                sx={column.id === 'request_id' ? { pl: 5 } : undefined}
-                                >
+                                <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
                                     {column.label}
                                 </TableCell>
                             ))}
@@ -118,19 +117,15 @@ export default function LeaveTable({ rows }: { rows: LeaveRequestType[] }) {
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row) => (
                                 <TableRow
-                                    key={row.request_id}
+                                    key={row.requestID} // FIXED: Use camelCase
                                     hover
                                     sx={{ cursor: "pointer" }}
-                                    // FIXED: Navigate to 'leave-requests' path
-                                    onClick={() => router.push(`/leaveRequests/${row.request_id}`)}
+                                    // FIXED: Use camelCase
+                                    onClick={() => router.push(`/leave-requests/${row.requestID}`)}
                                 >
                                     {columns.map((column) => {
                                         return (
-                                            <TableCell 
-                                            key={column.id} 
-                                            align={column.align}
-                                            sx={column.id === 'request_id' ? { pl: 5 } : undefined}
-                                            >
+                                            <TableCell key={column.id} align={column.align}>
                                                 {formatValue(column, row)}
                                             </TableCell>
                                         );

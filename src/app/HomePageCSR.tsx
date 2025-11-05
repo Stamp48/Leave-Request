@@ -9,12 +9,12 @@ import { ChartBarHorizontal } from "@/components/chart-bar-horizontal"
 import { ChartPieDonutText } from "@/components/chart-pie-donut-text"
 import { ChartPieLabel } from "@/components/chart-pie-label"
 
-// --- Import your mock data and chart types ---
+// --- Import your REAL UI types ---
 import type { ChartConfig } from "@/components/ui/chart"
-// FIXED: Import from new snake_case file
-import { LeaveRequestType } from "./lib/mockDataLeaveRequest" 
-import { EmployeeType } from "./lib/mockDataEmp"
-import { DivisionType } from "./lib/mockDataDepDiv"
+// FIXED: Import the REAL UI types
+import { LeaveRequest } from "@/types/leaveRequest" 
+import { EmployeeWithNames } from "@/types/employeeWithNames"
+import { Division } from "@/types/division"
 
 // This config is for the Area Chart
 const totalChartConfig = {
@@ -25,7 +25,7 @@ const totalChartConfig = {
 } satisfies ChartConfig
 
 // --- Define colors for the Pie Charts ---
-const DIVISION_COLORS = [ // Renamed for clarity
+const DIVISION_COLORS = [
   "var(--chart-1)",
   "var(--chart-2)",
   "var(--chart-3)",
@@ -33,13 +33,13 @@ const DIVISION_COLORS = [ // Renamed for clarity
   "var(--chart-5)",
 ]
 
-// FIXED: Renamed prop 'departments' to 'divisions'
-export default function HomePage({ leaveRequests, employees, divisions }: { leaveRequests: LeaveRequestType[], employees: EmployeeType[], divisions: DivisionType[] }) {
+// FIXED: Renamed props to use real UI types
+export default function HomePage({ leaveRequests, employees, divisions }: { leaveRequests: LeaveRequest[], employees: EmployeeWithNames[], divisions: Division[] }) {
   const [timeRange, setTimeRange] = React.useState("7d")
 
-  // --- FIXED: Map for quick employee DIVISION lookups ---
+  // --- FIXED: Map for quick employee DIVISION lookups (using camelCase) ---
   const employeeDivMap = React.useMemo(() => {
-    return new Map(employees.map(emp => [emp.employee_id, emp.division]))
+    return new Map(employees.map(emp => [emp.employeeID, emp.divisionName]))
   }, [employees])
 
   // --- Single, time-filtered list of requests ---
@@ -57,19 +57,20 @@ export default function HomePage({ leaveRequests, employees, divisions }: { leav
     startDate.setHours(0, 0, 0, 0)
 
     return leaveRequests.filter(req => {
-      const reqDate = new Date(req.start_date)
+      // FIXED: req.startDate is now a Date object
+      const reqDate = new Date(req.startDate)
       return reqDate >= startDate
     })
   }, [leaveRequests, timeRange])
 
-  // --- FIXED: Calculate dashboard totals (using snake_case) ---
+  // --- FIXED: Calculate dashboard totals (using camelCase) ---
   const dashboardCounts = React.useMemo(() => {
     return filteredRequests.reduce(
       (acc, req) => {
-        // FIXED: Use latest_status
-        if (req.latest_status === "Pending") acc.pending++
-        else if (req.latest_status === "Approved") acc.approved++
-        else if (req.latest_status === "Rejected") acc.rejected++
+        // FIXED: Use camelCase latestStatus
+        if (req.latestStatus === "Pending") acc.pending++
+        else if (req.latestStatus === "Approved") acc.approved++
+        else if (req.latestStatus === "Rejected") acc.rejected++
         acc.total++
         return acc
       },
@@ -77,11 +78,13 @@ export default function HomePage({ leaveRequests, employees, divisions }: { leav
     )
   }, [filteredRequests])
 
-  // --- Data for the Area Chart (No change) ---
+  // --- Data for the Area Chart (FIXED) ---
   const areaChartData = React.useMemo(() => {
     const countsByDate: Record<string, number> = {}
     for (const req of filteredRequests) {
-      countsByDate[req.start_date] = (countsByDate[req.start_date] || 0) + 1
+      // FIXED: req.startDate is a Date. Format it to 'YYYY-MM-DD'
+      const dateString = new Date(req.startDate).toLocaleDateString('en-CA') // 'en-CA' gives YYYY-MM-DD
+      countsByDate[dateString] = (countsByDate[dateString] || 0) + 1
     }
     return Object.entries(countsByDate)
       .map(([date, total]) => ({ date, total }))
@@ -92,12 +95,12 @@ export default function HomePage({ leaveRequests, employees, divisions }: { leav
   const divisionChartData = React.useMemo(() => {
     const countsByDiv: Record<string, number> = {}
     for (const req of filteredRequests) {
-      // FIXED: Use employeeDivMap
-      const division = employeeDivMap.get(req.employee_id) || "Unknown"
+      // FIXED: Use camelCase employeeID
+      const division = employeeDivMap.get(req.employeeID) || "Unknown"
       countsByDiv[division] = (countsByDiv[division] || 0) + 1
     }
     return Object.entries(countsByDiv).map(([divName, total]) => ({
-      division: divName, // FIXED: Use 'division' prop
+      division: divName, // Use 'division' prop
       total: total,
     }))
   }, [filteredRequests, employeeDivMap])
@@ -106,13 +109,13 @@ export default function HomePage({ leaveRequests, employees, divisions }: { leav
   const pieChartConfig = React.useMemo(() => {
     const config: ChartConfig = {
       approved: { label: "Approved" },
-      count: { label: "Count" }, // Add a label for employee count
+      count: { label: "Count" },
     }
 
-    // FIXED: Iterate over 'divisions' prop
     divisions.forEach((div, index) => {
-      config[div.division_name] = {
-        label: div.division_name,
+      // FIXED: Use camelCase divisionName
+      config[div.divisionName] = {
+        label: div.divisionName,
         color: DIVISION_COLORS[index % DIVISION_COLORS.length],
       }
     })
@@ -121,20 +124,20 @@ export default function HomePage({ leaveRequests, employees, divisions }: { leav
       color: DIVISION_COLORS[divisions.length % DIVISION_COLORS.length],
     }
     return config
-  }, [divisions]) // FIXED: Depend on 'divisions'
+  }, [divisions]) 
 
   // --- FIXED: Data for the Pie Chart (Approved by DIVISION) ---
   const approvedByDivData = React.useMemo(() => {
     const countsByDiv: Record<string, number> = {}
     for (const req of filteredRequests) {
-      // FIXED: Use latest_status
-      if (req.latest_status !== 'Approved') continue
-      // FIXED: Use employeeDivMap
-      const division = employeeDivMap.get(req.employee_id) || "Unknown"
+      // FIXED: Use camelCase latestStatus
+      if (req.latestStatus !== 'Approved') continue
+      // FIXED: Use camelCase employeeID
+      const division = employeeDivMap.get(req.employeeID) || "Unknown"
       countsByDiv[division] = (countsByDiv[division] || 0) + 1
     }
     return Object.entries(countsByDiv).map(([divName, total]) => ({
-      division: divName, // FIXED: Use 'division' prop
+      division: divName, // Use 'division' prop
       approved: total,
       fill: pieChartConfig[divName]?.color || "var(--chart-1)"
     }))
@@ -145,20 +148,18 @@ export default function HomePage({ leaveRequests, employees, divisions }: { leav
   const employeeByDivData = React.useMemo(() => {
     const countsByDiv: Record<string, number> = {}
 
-    // Count all employees from the prop
     for (const emp of employees) {
-      // FIXED: Group by 'division'
-      const division = emp.division || "Unknown";
+      // FIXED: Group by camelCase divisionName
+      const division = emp.divisionName || "Unknown";
       countsByDiv[division] = (countsByDiv[division] || 0) + 1
     }
 
-    // Map to the format the pie chart needs, adding the fill color
     return Object.entries(countsByDiv).map(([divName, total]) => ({
-      division: divName, // FIXED: Use 'division' prop
-      count: total, // We'll use "count" as the dataKey
+      division: divName, // Use 'division' prop
+      count: total,
       fill: pieChartConfig[divName]?.color || "var(--chart-1)"
     }))
-  }, [employees, pieChartConfig]) // Depends on employees list and the color config
+  }, [employees, pieChartConfig]) 
 
 
   return (
@@ -184,10 +185,8 @@ export default function HomePage({ leaveRequests, employees, divisions }: { leav
 
       {/* --- Bar & Pie Charts --- */}
       <Box sx={{ flex: 3, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, paddingX: "30px", paddingY: "10px" }}>
-        {/* FIXED: Pass 'divisionChartData' */}
         <ChartBarHorizontal data={divisionChartData} />
 
-        {/* FIXED: Pass 'employeeByDivData' and 'division' as nameKey */}
         <ChartPieDonutText
           data={employeeByDivData}
           config={pieChartConfig}
@@ -195,7 +194,6 @@ export default function HomePage({ leaveRequests, employees, divisions }: { leav
           nameKey="division"
         />
 
-        {/* FIXED: Pass 'approvedByDivData' and 'division' as nameKey */}
         <ChartPieLabel
           data={approvedByDivData}
           config={pieChartConfig}
@@ -206,4 +204,3 @@ export default function HomePage({ leaveRequests, employees, divisions }: { leav
     </Box>
   )
 }
-

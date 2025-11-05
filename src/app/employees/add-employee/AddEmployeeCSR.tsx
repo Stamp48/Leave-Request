@@ -206,60 +206,65 @@ export default function AddEmployee({
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!validate()) return;
+    e.preventDefault();
+    if (!validate()) return;
 
-  // (1) หา id จากชื่อที่ผู้ใช้เลือก
-  const selectedPosition = allPositions.find(p => p.positionName === formData.position);
-  const position_id = selectedPosition?.positionID ?? 0;
+    // (1) หา id จากชื่อที่ผู้ใช้เลือก
+    const selectedPosition = allPositions.find(p => p.positionName === formData.position);
+    const position_id = selectedPosition?.positionID ?? 0;
 
-  const selectedDepartment = allDepartments.find(d => d.departmentName === formData.department);
-  const department_id = selectedDepartment?.departmentID ?? 0;
+    const selectedDepartment = allDepartments.find(d => d.departmentName === formData.department);
+    const department_id = selectedDepartment?.departmentID ?? 0;
 
-  if (!position_id || !department_id) {
-    setErrors(prev => ({ 
-      ...prev, 
-      position: position_id ? "" : "Invalid position",
-      department: department_id ? "" : "Invalid department"
-    }));
-    return;
-  }
+    if (!position_id || !department_id) {
+      setErrors(prev => ({
+        ...prev,
+        position: position_id ? "" : "Invalid position",
+        department: department_id ? "" : "Invalid department"
+      }));
+      return;
+    }
 
-  // (2) เตรียม password เริ่มต้น (หรือปล่อยให้ผู้ใช้กรอกก็ได้)
-  const password = generateRandomPassword();
+    // (2) เตรียม password เริ่มต้น (หรือปล่อยให้ผู้ใช้กรอกก็ได้)
+    const password = generateRandomPassword();
 
-  // (3) เตรียม payload ตามที่ Go รับ (snake_case)
-  const payload = {
-    email: formData.email,
-    password,                           // ✅ Go จะ hash เองใน repo.Save
-    first_name: formData.first_name,
-    last_name: formData.last_name,
-    phone: formData.phone || "",
-    address: "",
-    profile_picture: imagePreview || "", // ถ้าอยากอัพโหลดไฟล์จริง แนะนำใช้ multipart (ตัวอย่างด้านล่าง)
-    first_login: true,
-    hire_date: dayjs().format("YYYY-MM-DD"),
-    birth_date: dayjs(formData.birth_date).format("YYYY-MM-DD"),
-    supervisor_id: null,
-    department_id,
-    position_id,
+    // (3) เตรียม payload ตามที่ Go รับ (snake_case)
+    const payload = {
+      email: formData.email,
+      password,                           // ✅ Go จะ hash เองใน repo.Save
+      first_name: formData.first_name,
+      last_name: formData.last_name,
+      phone: formData.phone || "",
+      address: "",
+      profile_picture: imagePreview || "", // ถ้าอยากอัพโหลดไฟล์จริง แนะนำใช้ multipart (ตัวอย่างด้านล่าง)
+      first_login: true,
+      hire_date: dayjs().format("YYYY-MM-DD"),
+      birth_date: dayjs(formData.birth_date).format("YYYY-MM-DD"),
+      supervisor_id: null,
+      department_id,
+      position_id,
+    };
+
+    // (4) ยิงไป backend (ถ้า CORS เปิดเรียบร้อย ยิงตรงได้)
+    const res = await fetch(`/api/employees`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+
+    if (!res.ok) {
+      const txt = await res.text();
+      console.error("Create failed:", txt);
+      setErrors(prev => ({ ...prev, form: "Create employee failed." }));
+      return;
+    }
+
+    const created = await res.json(); // { employee_id, ... }
+    // ไปหน้า detail ของพนักงานที่สร้าง หรือกลับ list
+    // router.push(`/employees/${created.employee_id}`);
+    router.push("/employees");
   };
-
-  // (4) ยิงไป backend (ถ้า CORS เปิดเรียบร้อย ยิงตรงได้)
-  const res = await fetch(`${process.env.APP_ORIGIN}/api/employees`);
-
-  if (!res.ok) {
-    const txt = await res.text();
-    console.error("Create failed:", txt);
-    setErrors(prev => ({ ...prev, form: "Create employee failed." }));
-    return;
-  }
-
-  const created = await res.json(); // { employee_id, ... }
-  // ไปหน้า detail ของพนักงานที่สร้าง หรือกลับ list
-  // router.push(`/employees/${created.employee_id}`);
-  router.push("/employees");
-};
 
 
   return (

@@ -5,13 +5,14 @@ import SearchBar from "../components/SearchBar";
 import Typography from "@mui/material/Typography";
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 // FIXED: Import new snake_case type
-import { LeaveRequestType } from "@/app/lib/mockDataLeaveRequest";
 import LeaveTable from "../components/LeaveComp/LeaveTable";
 import { useRouter } from "next/navigation";
 // NEW: Imports for the sort dropdown
 import { FormControl, InputLabel, MenuItem } from "@mui/material";
+import { LeaveRequest } from "@/types/leaveRequest";
+import dayjs from "dayjs";
 
-export default function LeaveRequests({ initialRows }: { initialRows: LeaveRequestType[] }) {
+export default function LeaveRequests({ initialRows }: { initialRows: LeaveRequest[] }) {
   const [searchText, setSearchText] = useState("");
   // NEW: State for sorting, defaults to 'newest'
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
@@ -19,46 +20,49 @@ export default function LeaveRequests({ initialRows }: { initialRows: LeaveReque
 
   // NEW: Combined filter and sort logic
   const filteredAndSortedRows = useMemo(() => {
-    let rows = [...initialRows]; // Start with the server-sorted list
+  let rows = [...initialRows];
 
-    // 1. Apply search filter
-    if (searchText) {
-      const lowerSearchText = searchText.toLowerCase();
-
-      // --- UPDATED SEARCH LOGIC (Based on table columns) ---
-      rows = rows.filter((row) => {
-        const fullName = `${row.employee_first_name} ${row.employee_last_name}`.toLowerCase();
-
-        // Check only the fields visible in the table
-        const isMatch =
-          fullName.includes(lowerSearchText) ||
-          row.employee_division_name.toLowerCase().includes(lowerSearchText) ||
-          row.request_id.toString().includes(lowerSearchText) ||
-          row.leave_type.toLowerCase().includes(lowerSearchText) ||
-          row.latest_status.toLowerCase().includes(lowerSearchText) ||
-          row.start_date.toLowerCase().includes(lowerSearchText) ||
-          row.end_date.toLowerCase().includes(lowerSearchText);
-
-        return isMatch;
-      });
-      // --- END OF UPDATED LOGIC ---
-    }
-
-    // 2. Apply client-side sorting
-    // This sorting runs *after* the search
-    rows.sort((a, b) => {
-      const timeA = new Date(a.latest_timestamp).getTime();
-      const timeB = new Date(b.latest_timestamp).getTime();
-      return sortOrder === 'newest' ? timeB - timeA : timeA - timeB;
+  // 1) filter
+  if (searchText) {
+    const q = searchText.toLowerCase();
+    rows = rows.filter((row) => {
+      const fullName = `${row.employeeFirstName} ${row.employeeLastName}`.toLowerCase();
+      return (
+        fullName.includes(q) ||
+        (row.employeeDivisionName ?? "").toLowerCase().includes(q) ||
+        String(row.requestID).includes(q) ||
+        (row.leaveType ?? "").toLowerCase().includes(q) ||
+        (row.latestStatus ?? "").toLowerCase().includes(q) ||
+        asSearchString(row.startDate).toLowerCase().includes(q) ||
+        asSearchString(row.endDate).toLowerCase().includes(q)
+      );
     });
+  }
 
-    return rows;
-  }, [initialRows, searchText, sortOrder]); // Re-run when any of these change
+  // 2) sort by latestTimestamp (รองรับทั้ง string/Date)
+  rows.sort((a, b) => {
+    const timeA = dayjs(a.latestTimestamp as any).valueOf();
+    const timeB = dayjs(b.latestTimestamp as any).valueOf();
+    return sortOrder === "newest" ? timeB - timeA : timeA - timeB;
+  });
+
+  return rows;
+}, [initialRows, searchText, sortOrder]);
 
   // NEW: Handler for the sort dropdown
   const handleSortChange = (event: SelectChangeEvent) => {
     setSortOrder(event.target.value as 'newest' | 'oldest');
   }
+
+  function asSearchString(v: unknown): string {
+  if (v == null) return "";
+  if (typeof v === "string") return v;
+  const d = dayjs(v as any);
+  if (d.isValid()) return d.format("YYYY-MM-DD");
+  return String(v);
+
+
+};
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", marginBottom: "100px" }}>
