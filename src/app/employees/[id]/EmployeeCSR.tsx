@@ -7,15 +7,15 @@ import CardContent from "@mui/material/CardContent";
 import EmployeeCard from "@/app/components/EmployeeComp/EmployeeCard";
 import CardHeader from '@mui/material/CardHeader';
 import { useRouter } from "next/navigation";
-import { EmployeeType } from "@/app/lib/mockDataEmp";
 import Button from "@mui/material/Button";
 import { useState } from "react";
 import { StatusHistoryType } from "@/app/lib/mockStatusHistory"
 import LeaveCard from "@/app/components/LeaveComp/LeaveCard";
+import { EmployeeWithNames } from "@/types/employeeWithNames";
 
 
 
-export default function Employee({ employee, supervisor, isSupervisor, leaveHistory }: { employee: EmployeeType, supervisor?: EmployeeType, isSupervisor: boolean, leaveHistory: StatusHistoryType[] }) {
+export default function Employee({ employee, supervisor, isSupervisor, leaveHistory }: { employee: EmployeeWithNames, supervisor?: EmployeeWithNames, isSupervisor: boolean, leaveHistory: StatusHistoryType[] }) {
     const router = useRouter();
 
 
@@ -49,21 +49,21 @@ export default function Employee({ employee, supervisor, isSupervisor, leaveHist
                     gap: 2,
                 }}
             >
-                {employee.supervisor_id !== null && (
+                {employee.supervisorID !== null && (
                     <Card sx={{ flex: "0 0 70%", boxShadow: 3, borderRadius: 2 }}>
                         <CardHeader
                             title={<Typography variant="h4" sx={{ ml: 2 }}>Supervisor</Typography>}
                         />
                         <CardContent
                             sx={{ ml: 2 }}
-                            onClick={() => supervisor && router.push(`/employees/${supervisor.employee_id}`)}
+                            onClick={() => supervisor && router.push(`/employees/${supervisor.employeeID}`)}
                         >
                             {supervisor && <EmployeeCard employee={supervisor} />}
                         </CardContent>
                     </Card>
                 )}
                 {isSupervisor &&
-                    <Button variant="contained" onClick={() => router.push(`/employees/${employee.employee_id}/subordinates`)} sx={{
+                    <Button variant="contained" onClick={() => router.push(`/employees/${employee.employeeID}/subordinates`)} sx={{
                         bgcolor: 'white', 
                         color: 'primary.main', 
                         '&:hover': {

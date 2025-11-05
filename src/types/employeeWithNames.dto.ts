@@ -1,4 +1,4 @@
-export interface EmployeeDTO {
+export interface EmployeeWithNamesDTO {
     employee_id: number;
     email: string;
     first_name: string;
@@ -6,12 +6,12 @@ export interface EmployeeDTO {
     phone: string;
     address: string;
     profile_picture: string | null;
-    first_login: boolean;
     hire_date: string;
     birth_date: string;
 
-    //Foregin Key:
+    division_name: string;
+    department_name: string;
+    position_name: string;
+
     supervisor_id: number | null;
-    department_id: number;
-    position_id: number;
 }

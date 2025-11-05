@@ -1,4 +1,4 @@
-export interface Employee {
+export interface EmployeeWithNames {
     employeeID: number;
     email: string;
     firstName: string;
@@ -6,12 +6,12 @@ export interface Employee {
     phone: string;
     address: string;
     profilePicture: string | null;
-    firstLogin: boolean;
     hireDate: Date;
     birthDate: Date;
 
-    //Foreign Key:
-    supervisorID?: number | null;
-    departmentID: number;
-    positionID: number;
+    divisionName: string;
+    departmentName: string;
+    positionName: string;
+
+    supervisorID: number | null;
 }

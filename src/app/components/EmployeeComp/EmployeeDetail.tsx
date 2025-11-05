@@ -17,30 +17,30 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { EmployeeWithNames } from "@/types/employeeWithNames";
 
+const formatDate = (d: Date | string | null | undefined) => {
+  if (!d) return "-";
+  const date = d instanceof Date ? d : new Date(d);
+  return date.toISOString().slice(0, 10);
+};
 
-
-
-
-
-
-
-export default function EmployeeDetail({ employee, handleClickOpen, handleClose, open }: { employee: EmployeeType, handleClickOpen?: () => void, handleClose?: () => void, open: boolean }) {
+export default function EmployeeDetail({ employee, handleClickOpen, handleClose, open }: { employee: EmployeeWithNames, handleClickOpen?: () => void, handleClose?: () => void, open: boolean }) {
   const router = useRouter();
   return (
     <>
       <Card sx={{ flexGrow: 1, boxShadow: 3, borderRadius: 2 }}>
         <CardHeader
-          avatar={<Avatar alt={`${employee.first_name} ${employee.last_name}`}
-            src={employee.profile_picture}
+          avatar={<Avatar alt={`${employee.firstName} ${employee.lastName}`}
+            src={employee.profilePicture ?? undefined}
             sx={{ width: 150, height: 150, marginTop: "20px", marginLeft: "20px", marginRight: "15px" }}
           />
           }
-          title={<Typography variant="h4">{employee.first_name} {employee.last_name}</Typography>}
+          title={<Typography variant="h4">{employee.firstName} {employee.lastName}</Typography>}
           subheader={
             <Box>
-              <Typography variant="subtitle1">{employee.position}</Typography>
-              <Typography variant="subtitle2">Employee ID: {employee.employee_id}</Typography>
+              <Typography variant="subtitle1">{employee.positionName}</Typography>
+              <Typography variant="subtitle2">Employee ID: {employee.employeeID}</Typography>
             </Box>
           }
         />
@@ -50,12 +50,12 @@ export default function EmployeeDetail({ employee, handleClickOpen, handleClose,
             <Detail label="Email" text={employee.email} />
           </Box>
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
-            <Detail label="Division" text={employee.division} />
-            <Detail label="Department" text={employee.department} />
+            <Detail label="Division" text={employee.divisionName} />
+            <Detail label="Department" text={employee.departmentName} />
           </Box>
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
-            <Detail label="Date of Birth" text={employee.birth_date} />
-            <Detail label="Start Date" text={employee.hire_date} />
+            <Detail label="Date of Birth" text={formatDate(employee.birthDate)} />
+            <Detail label="Start Date" text={formatDate(employee.hireDate)} />
           </Box>
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
             <Detail label="Address" text={employee.address} />
@@ -68,7 +68,7 @@ export default function EmployeeDetail({ employee, handleClickOpen, handleClose,
           <Box sx={{ paddingLeft: "25px" , paddingBottom:"25px"}}>
             <Button variant="outlined"
               size="small" sx={{ marginRight: "7.5px"  }}
-              onClick={() => router.push(`/employees/${employee.employee_id}/edit`)}>
+              onClick={() => router.push(`/employees/${employee.employeeID}/edit`)}>
               Edit
             </Button>
             <React.Fragment>

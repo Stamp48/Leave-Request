@@ -1,17 +1,38 @@
 import Employee from "./EmployeeCSR";
-import { mockEmployees } from "@/app/lib/mockDataEmp";
 import { mockStatusHistory, StatusHistoryType } from "@/app/lib/mockStatusHistory";
+import type { EmployeeWithNames } from "@/types/employeeWithNames";
 
-export default function EmployeePage({ params }: { params: { "emp-id": string } }) {
-  const employee = mockEmployees.find(e => e.employee_id.toString() === params["emp-id"]);
+
+export default async function EmployeePage({ params }: { params: { id: string } }) {
+  const { id } = params;
+
+  const [empRes, listRes] = await Promise.all([
+    fetch(`${process.env.APP_ORIGIN}/api/employee/${params.id}`, { cache: "no-store" }),
+    fetch(`${process.env.APP_ORIGIN}/api/employees/with-names`, { cache: "no-store" }),
+  ]);
+
+  // 🔹 เช็ก error ทีละตัว (กัน HTML error page แตกตอน res.json())
+  if (!empRes.ok) {
+    if (empRes.status === 404) return <h1>Employee not found</h1>;
+    const txt = await empRes.text();
+    throw new Error(`GET /api/employee/${params.id} ${empRes.status}: ${txt.slice(0,200)}`);
+  }
+  if (!listRes.ok) {
+    const txt = await listRes.text();
+    throw new Error(`GET /api/employees/with-names ${listRes.status}: ${txt.slice(0,200)}`);
+  }
+
+  // 🔹 แปลง JSON พร้อมกัน
+  const [employee, employees]: [EmployeeWithNames, EmployeeWithNames[]] =
+    await Promise.all([empRes.json(), listRes.json()]);
 
   if (!employee) return <h1>Employee not found</h1>;
 
-  const supervisor = employee.supervisor_id
-    ? mockEmployees.find(e => e.employee_id === employee.supervisor_id)
+  const supervisor = employee.supervisorID
+    ? employees.find(e => e.employeeID === employee.supervisorID)
     : null;
 
-  const isSupervisor = mockEmployees.some(e => e.supervisor_id === employee.employee_id);
+  const isSupervisor = employees.some(e => e.supervisorID === employee.employeeID);
 
   // --- Filter and Sort Leave History ---
 
@@ -19,7 +40,7 @@ export default function EmployeePage({ params }: { params: { "emp-id": string } 
   // We MUST filter for 'Pending' here, as it's the only way to know
   // this employee *started* the request.
   const originatingRequests = mockStatusHistory.filter(
-    item => item.employee_id === employee.employee_id && item.status === 'Pending'
+    item => item.employee_id === employee.employeeID && item.status === 'Pending'
   );
 
   // STEP 2: Sort these originating requests by date to find the newest ones.

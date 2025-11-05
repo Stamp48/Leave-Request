@@ -8,9 +8,10 @@ import Typography from "@mui/material/Typography";
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from '@mui/material/InputLabel';
-import { EmployeeType } from "@/app/lib/mockDataEmp";
+import { Employee } from "@/types/employee";
 
 import { useRouter } from "next/navigation";
+import { EmployeeWithNames } from "@/types/employeeWithNames";
 
 
 
@@ -18,7 +19,7 @@ export default function Employees({
   initialRows,
   orgHierarchyData 
 }: { 
-  initialRows: EmployeeType[],
+  initialRows: EmployeeWithNames[],
   orgHierarchyData: Record<string, string[]> 
 }) {
   const [searchText, setSearchText] = useState("");
@@ -59,12 +60,12 @@ export default function Employees({
 
     // 1. Filter by Division
     if (selectedDivision) {
-      rows = rows.filter(row => row.division === selectedDivision);
+      rows = rows.filter(row => row.divisionName=== selectedDivision);
     }
 
     // 2. Filter by Department (on the already-filtered list)
     if (selectedDepartment) {
-      rows = rows.filter(row => row.department === selectedDepartment);
+      rows = rows.filter(row => row.departmentName=== selectedDepartment);
     }
 
     // 3. Filter by Search Text (on the result of the above)
@@ -73,16 +74,16 @@ export default function Employees({
       
       // --- UPDATED SEARCH LOGIC ---
       rows = rows.filter((row) => {
-        const fullName = `${row.first_name} ${row.last_name}`.toLowerCase();
+        const fullName = `${row.firstName} ${row.lastName}`.toLowerCase();
 
         // Check only the fields we care about
         const isMatch = 
-          row.employee_id.toString().includes(lowerSearchText) ||
+          row.employeeID.toString().includes(lowerSearchText) ||
           fullName.includes(lowerSearchText) ||
           row.email.toLowerCase().includes(lowerSearchText) ||
-          row.division.toLowerCase().includes(lowerSearchText) ||
-          row.department.toLowerCase().includes(lowerSearchText) ||
-          row.position.toLowerCase().includes(lowerSearchText);
+          row.divisionName.toLowerCase().includes(lowerSearchText) ||
+          row.departmentName.toLowerCase().includes(lowerSearchText) ||
+          row.positionName.toLowerCase().includes(lowerSearchText);
         
         return isMatch;
       });

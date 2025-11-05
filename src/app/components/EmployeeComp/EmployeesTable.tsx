@@ -12,11 +12,12 @@ import Avatar from '@mui/material/Avatar';
 import { ReactNode } from 'react';
 import { useRouter } from "next/navigation";
 import { EmployeeType } from "@/app/lib/mockDataEmp";
+import { EmployeeWithNames } from '@/types/employeeWithNames';
 
 
 
 interface Column {
-  id: keyof EmployeeType;
+  id: keyof EmployeeWithNames;
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -25,15 +26,15 @@ interface Column {
 
 
 const columns: readonly Column[] = [
-  { id: 'profile_picture', label: 'Profile', minWidth: 100 },
-  { id: 'first_name', label: 'Full Name', minWidth: 170 },
+  { id: 'profilePicture', label: 'Profile', minWidth: 100 },
+  { id: 'firstName', label: 'Full Name', minWidth: 170 },
   { id: 'email', label: 'Email', minWidth: 200 },
-  { id: 'division', label: 'Division', minWidth: 150 },
-  { id: 'department', label: 'Department', minWidth: 150 },
+  { id: 'divisionName', label: 'Division', minWidth: 150 },
+  { id: 'departmentName', label: 'Department', minWidth: 150 },
 ];
 
 
-export default function EmployeesTable({ rows }: { rows: EmployeeType[] }) {
+export default function EmployeesTable({ rows }: { rows: EmployeeWithNames[] }) {
   const router = useRouter();
 
   const [page, setPage] = useState(0);
@@ -54,21 +55,21 @@ export default function EmployeesTable({ rows }: { rows: EmployeeType[] }) {
    * Formats the cell value based on the column ID.
    * This is much cleaner than putting logic in the render loop.
    */
-  const formatValue = (column: Column, row: EmployeeType): ReactNode => {
+  const formatValue = (column: Column, row: EmployeeWithNames): ReactNode => {
     // We pass the whole row in case we need to combine fields,
     // like firstname and lastname.
 
     switch (column.id) {
-      case 'profile_picture':
+      case 'profilePicture':
         return <Avatar 
-                  src={row.profile_picture} 
-                  alt={`${row.first_name} ${row.last_name}`} 
+                  src={row.profilePicture ?? undefined} 
+                  alt={`${row.firstName} ${row.lastName}`} 
                   // 1. FIXED: Make avatar slightly larger
                   sx={{ width: 55, height: 55 }}
                 />;
 
-      case 'first_name':
-        return `${row.first_name} ${row.last_name}`;
+      case 'firstName':
+        return `${row.firstName} ${row.lastName}`;
 
       default:
         // Default case just returns the value as-is.
@@ -89,7 +90,7 @@ export default function EmployeesTable({ rows }: { rows: EmployeeType[] }) {
                   align={column.align} 
                   style={{ minWidth: column.minWidth }}
                   // 2. FIXED: Add left padding to the profile pic header
-                  sx={column.id === 'profile_picture' ? { pl: 5 } : undefined}
+                  sx={column.id === 'profilePicture' ? { pl: 5 } : undefined}
                 >
                   {column.label}
                 </TableCell>
@@ -101,10 +102,10 @@ export default function EmployeesTable({ rows }: { rows: EmployeeType[] }) {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
                 <TableRow
-                  key={row.employee_id}
+                  key={row.employeeID}
                   hover
                   sx={{ cursor: "pointer" }}
-                  onClick={() => router.push(`/employees/${row.employee_id}`)}>
+                  onClick={() => router.push(`/employees/${row.employeeID}`)}>
                   {columns.map((column) => {
                     // This is now much simpler and more readable!
                     return (
@@ -112,7 +113,7 @@ export default function EmployeesTable({ rows }: { rows: EmployeeType[] }) {
                         key={column.id} 
                         align={column.align}
                         // 2. FIXED: Add left padding to the profile pic cell
-                        sx={column.id === 'profile_picture' ? { pl: 5 } : undefined}
+                        sx={column.id === 'profilePicture' ? { pl: 5 } : undefined}
                       >
                         {formatValue(column, row)}
                       </TableCell>
