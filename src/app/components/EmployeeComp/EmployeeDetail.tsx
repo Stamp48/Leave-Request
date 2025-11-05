@@ -7,7 +7,6 @@ import Button from "@mui/material/Button";
 import Detail from "../Detail";
 import Box from "@mui/material/Box";
 import CardHeader from '@mui/material/CardHeader';
-import { EmployeeType } from "@/app/lib/mockDataEmp";
 import Avatar from "@mui/material/Avatar";
 import { useRouter } from "next/navigation";
 

@@ -1,0 +1,1 @@
+export type LeaveStatus = 'Pending' | 'Approved' | 'Rejected' | 'Canceled' | 'Modified' | 'Revoked';

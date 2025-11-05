@@ -1,161 +1,82 @@
-// CHANGED: Correctly import both types
-import { DepartmentType, DivisionType } from "./mockDataDepDiv";
-import { EmployeeType } from "./mockDataEmp";
-// CHANGED: Updated import path
-import { LeaveRequestType } from "./mockDataLeaveRequest"; 
 import { parseISO, startOfDay } from "date-fns";
 import { DateRange } from "react-day-picker";
+import { LeaveRequest } from "@/types/leaveRequest";
 
-// CHANGED: Renamed type for clarity. It maps Divisions to Departments.
-export type ClientHierarchyData = Record<string, string[]>;
-
-// CHANGED: Function renamed and logic inverted to match Div > Dept hierarchy
-export function structureClientHierarchy(
-  divisions: DivisionType[],
-  departments: DepartmentType[]
-): ClientHierarchyData {
-  return divisions.reduce((acc, division) => {
-    // Find departments belonging to this division
-    const relevantDepartments = departments
-      .filter(dept => dept.division_id === division.division_id)
-      .map(dept => dept.department_name);
-    acc[division.division_name] = relevantDepartments;
-    return acc;
-  }, {} as ClientHierarchyData);
-}
-
-// CHANGED: Corrected the type of the 'departments' parameter
-export function getDepartmentName(departmentId: number, departments: DepartmentType[]): string {
-  const department = departments.find((dept) => dept.department_id === departmentId);
-  return department ? department.department_name : "Unknown Department";
-}
-
-// CHANGED: Renamed function and updated filter logic to use 'division'
-export const getSupervisorsByDivision = (employeeList: EmployeeType[], division: string): EmployeeType[] => {
-  const supervisorIds = new Set(
-    employeeList
-      .map(emp => emp.supervisor_id)
-      .filter((id): id is number => id != null) // Type guard
-  );
-  return employeeList.filter(emp =>
-    supervisorIds.has(emp.employee_id) && emp.division === division // CHANGED: was emp.department
-  );
-};
-
-export const getDirectReports = (employeeList: EmployeeType[], supervisorId: number): EmployeeType[] => {
-  return employeeList.filter(emp => emp.supervisor_id === supervisorId);
-};
-
-// CHANGED: Renamed function and updated reducer logic to use 'division'
-export const countEmployeesByDivision = (employeeList: EmployeeType[]): Record<string, number> => {
-  return employeeList.reduce((acc: Record<string, number>, emp) => {
-    acc[emp.division] = (acc[emp.division] || 0) + 1; // CHANGED: was emp.department
-    return acc;
-  }, {});
-};
-
-export const getTopLevelEmployees = (employeeList: EmployeeType[]): EmployeeType[] => {
-  return employeeList.filter(emp => emp.supervisor_id == null);
-};
-
-export const getReportingChain = (employeeList: EmployeeType[], employeeId: number): EmployeeType[] => {
-  const chain: EmployeeType[] = [];
-  const employeeMap = new Map(employeeList.map(emp => [emp.employee_id, emp]));
-  let currentEmployee = employeeMap.get(employeeId);
-  while (currentEmployee?.supervisor_id) {
-    const supervisor = employeeMap.get(currentEmployee.supervisor_id);
-    if (supervisor) {
-      chain.push(supervisor);
-      currentEmployee = supervisor;
-    } else {
-      break; // Stop if a supervisor ID points to a non-existent employee
-    }
+/** รองรับ input เป็น Date หรือ 'YYYY-MM-DD' string */
+function asDayDate(v: Date | string | undefined | null, fieldName: string): Date {
+  if (v instanceof Date) return startOfDay(v);
+  if (typeof v === "string" && v.trim() !== "") {
+    const d = startOfDay(parseISO(v));
+    if (!isNaN(d.getTime())) return d;
   }
-  return chain;
-};
+  throw new TypeError(`Invalid or missing date: ${fieldName}`);
+}
 
-function parseLocalDate(dateString: string): Date {
-  const [year, month, day] = dateString.split('-').map(Number);
-  // Month is 0-indexed in JavaScript (0 = January, 11 = December)
-  return new Date(year, month - 1, day);
+/** อ่าน boolean โดยรองรับทั้ง camelCase/snake_case */
+function readBool(
+  obj: Record<string, any>,
+  camel: string,
+  snake: string,
+  defaultValue = false
+): boolean {
+  if (camel in obj && typeof obj[camel] === "boolean") return obj[camel] as boolean;
+  if (snake in obj && typeof obj[snake] === "boolean") return obj[snake] as boolean;
+  return defaultValue;
 }
 
 /**
- * Calculates the total duration of a leave request in business days.
- * This function correctly handles:
- * - Weekends (Saturday/Sunday)
- * - Single-day full-day requests
- * - Single-day half-day requests (using `is_half_day`)
- * - Multi-day requests with half-days on the first or last day
- * * UPDATED: to use snake_case properties (is_half_day, etc.)
+ * คำนวณจำนวนวันลา (นับเฉพาะวันทำงาน) รองรับ:
+ * - single-day (full/half)
+ * - multi-day (half เฉพาะวันแรก/วันท้าย)
+ * - input เป็น string หรือ Date
+ * - ชื่อฟิลด์ทั้ง camelCase/snake_case
  */
-export function calculateLeaveDuration(request: LeaveRequestType): number {
-  const startDate = parseLocalDate(request.start_date);
-  const endDate = parseLocalDate(request.end_date);
+export function calculateLeaveDuration(request: LeaveRequest): number {
+  const startDate = asDayDate((request as any).startDate ?? (request as any).start_date, "startDate");
+  const endDate   = asDayDate((request as any).endDate   ?? (request as any).end_date,   "endDate");
 
-  // --- 1. Handle single-day requests ---
+  const isHalfDay      = readBool(request as any, "isHalfDay", "is_half_day");
+  const isFirstHalfDay = readBool(request as any, "isFirstHalfDay", "is_first_half_day");
+  const isLastHalfDay  = readBool(request as any, "isLastHalfDay", "is_last_half_day");
+
+  // --- single-day ---
   if (startDate.getTime() === endDate.getTime()) {
-    const dayOfWeek = startDate.getDay();
-    // Check if the single day is a weekend
-    if (dayOfWeek === 0 || dayOfWeek === 6) {
-      return 0;
-    }
-    // It's a weekday
-    // FIXED: Use snake_case
-    return request.is_half_day ? 0.5 : 1;
+    const dow = startDate.getDay();
+    if (dow === 0 || dow === 6) return 0;   // เสาร์/อาทิตย์
+    return isHalfDay ? 0.5 : 1;
   }
 
-  // --- 2. Handle multi-day requests ---
-  let totalDays = 0;
-  // Create a new Date object to loop with, so we don't modify the original
-  const currentDate = new Date(startDate);
-
-  while (currentDate <= endDate) {
-    const dayOfWeek = currentDate.getDay();
-
-    // Check if the current day is a weekday (1=Mon, 2=Tue, ..., 5=Fri)
-    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-      const isFirstDay = currentDate.getTime() === startDate.getTime();
-      const isLastDay = currentDate.getTime() === endDate.getTime();
-
-      // FIXED: Use snake_case
-      if (isFirstDay && request.is_first_half_day) {
-        totalDays += 0.5;
-      // FIXED: Use snake_case
-      } else if (isLastDay && request.is_last_half_day) { 
-        totalDays += 0.5;
-      } else {
-        // It's a full workday
-        totalDays += 1;
-      }
+  // --- multi-day ---
+  let total = 0;
+  const cur = new Date(startDate);
+  while (cur <= endDate) {
+    const dow = cur.getDay();
+    if (dow !== 0 && dow !== 6) {
+      const first = cur.getTime() === startDate.getTime();
+      const last  = cur.getTime() === endDate.getTime();
+      if (first && isFirstHalfDay) total += 0.5;
+      else if (last && isLastHalfDay) total += 0.5;
+      else total += 1;
     }
-    // Move to the next day
-    currentDate.setDate(currentDate.getDate() + 1);
+    cur.setDate(cur.getDate() + 1);
   }
-  return totalDays;
+  return total;
 }
 
+/** filter ตามช่วงวันที่ โดย normalize เป็น start-of-day ทั้งหมด */
 export function filterRequestsByRange(
-  requests: LeaveRequestType[],
+  requests: LeaveRequest[],
   dateRange: DateRange | undefined
-): LeaveRequestType[] {
-  // If no range is selected, return all requests.
-  if (!dateRange || !dateRange.from) {
-    return requests;
-  }
-  // Use startOfDay to ignore time and prevent timezone/comparison issues
-  const filterStart = startOfDay(dateRange.from);
-  // Handle case where only a "from" date is selected
-  const filterEnd = dateRange.to ? startOfDay(dateRange.to) : filterStart;
+): LeaveRequest[] {
+  if (!dateRange || !dateRange.from) return requests;
 
-  return requests.filter(req => {
-    // parseISO correctly handles 'YYYY-MM-DD' strings
-    const reqStart = parseISO(req.start_date);
-    const reqEnd = parseISO(req.end_date);
-    // The logic for an overlap:
-    // Request ends after filter starts AND Request starts before filter ends
-    const isOverlapping =
-      (reqEnd >= filterStart) && (reqStart <= filterEnd);
-    return isOverlapping;
+  const filterStart = startOfDay(dateRange.from);
+  const filterEnd   = startOfDay(dateRange.to ?? dateRange.from);
+
+  return requests.filter((req) => {
+    const reqStart = asDayDate((req as any).startDate ?? (req as any).start_date, "startDate");
+    const reqEnd   = asDayDate((req as any).endDate   ?? (req as any).end_date,   "endDate");
+    // ซ้อนทับกันถ้า reqEnd >= filterStart และ reqStart <= filterEnd
+    return reqEnd >= filterStart && reqStart <= filterEnd;
   });
 }

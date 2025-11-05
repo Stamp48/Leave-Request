@@ -1,7 +1,6 @@
 import Stack from "@mui/material/Stack";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import { EmployeeType } from "@/app/lib/mockDataEmp";
 import { Box } from "@mui/material";
 import { EmployeeWithNames } from "@/types/employeeWithNames";
 

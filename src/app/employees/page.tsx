@@ -1,23 +1,42 @@
 import EmployeesCSR from "./EmployeesCSR";
-import { mockEmployees } from "@/app/lib/mockDataEmp";
-// 1. Import data and utility
-import { mockDepartments, mockDivisions } from "@/app/lib/mockDataDepDiv";
 import { structureClientHierarchy } from "@/app/lib/utils";
-import type { Employee } from "@/types/employee";
 import type { EmployeeWithNames } from "@/types/employeeWithNames";
+import type { Department } from "@/types/department";
+import type { Division } from "@/types/division";
 
 export default async function EmployeesPage() {
-  const res = await fetch(`${process.env.APP_ORIGIN}/api/employees/with-names`, {
-    cache: "no-store",
-  });
-  const employees: EmployeeWithNames[] = await res.json();
-  
-  // 2. Create the hierarchy object
-  const orgHierarchyData = structureClientHierarchy(mockDivisions, mockDepartments);
-  
-  // 3. Pass both initialRows and orgHierarchyData to the client
-  return <EmployeesCSR 
-    initialRows={employees} 
-    orgHierarchyData={orgHierarchyData} 
-  />;
+  // ใช้ URL แบบ relative ก็ได้ใน Server Component (เลี่ยงปัญหา APP_ORIGIN ว่าง)
+  const [empRes, divRes, depRes] = await Promise.all([
+    fetch(`${process.env.APP_ORIGIN}/api/employees/with-names`, { cache: "no-store" }),
+    fetch(`${process.env.APP_ORIGIN}/api/divisions`, { cache: "no-store" }),
+    fetch(`${process.env.APP_ORIGIN}/api/departments`, { cache: "no-store" }),
+  ]);
+
+  if (!empRes.ok) {
+    throw new Error("Failed to fetch employees");
+  }
+
+  if (!divRes.ok) {
+    throw new Error("Failed to fetch divisions");
+  }
+
+
+  if (!empRes.ok || !divRes.ok || !depRes.ok) {
+    throw new Error("Failed to fetch employees/divisions/departments");
+  }
+
+  const [employees, divisions, departments]: [
+    EmployeeWithNames[],
+    Division[],
+    Department[]
+  ] = await Promise.all([empRes.json(), divRes.json(), depRes.json()]);
+
+  const orgHierarchyData = structureClientHierarchy(divisions, departments);
+
+  return (
+    <EmployeesCSR
+      initialRows={employees}
+      orgHierarchyData={orgHierarchyData}
+    />
+  );
 }

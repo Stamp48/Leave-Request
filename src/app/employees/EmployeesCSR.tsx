@@ -8,7 +8,6 @@ import Typography from "@mui/material/Typography";
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from '@mui/material/InputLabel';
-import { Employee } from "@/types/employee";
 
 import { useRouter } from "next/navigation";
 import { EmployeeWithNames } from "@/types/employeeWithNames";

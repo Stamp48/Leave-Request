@@ -11,7 +11,6 @@ import TableRow from '@mui/material/TableRow';
 import Avatar from '@mui/material/Avatar';
 import { ReactNode } from 'react';
 import { useRouter } from "next/navigation";
-import { EmployeeType } from "@/app/lib/mockDataEmp";
 import { EmployeeWithNames } from '@/types/employeeWithNames';
 
 
