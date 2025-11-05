@@ -1,5 +1,4 @@
 import { toEmployeeWithNames } from "@/lib/mappers/employeeWithNamesMapper";
-import { Employee } from "@/types/employee";
 import { EmployeeWithNames } from "@/types/employeeWithNames";
 import { EmployeeWithNamesDTO } from "@/types/employeeWithNames.dto";
 import { NextRequest } from "next/server";

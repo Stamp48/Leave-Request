@@ -4,7 +4,7 @@ import type { Position } from "@/types/position";
 export function toPosition(dto: PositionDTO): Position {
   return {
     positionID: dto.position_id,
-    name: dto.name,
+    positionName: dto.position_name,
   };
 }
 

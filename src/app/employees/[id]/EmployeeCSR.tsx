@@ -9,13 +9,13 @@ import CardHeader from '@mui/material/CardHeader';
 import { useRouter } from "next/navigation";
 import Button from "@mui/material/Button";
 import { useState } from "react";
-import { StatusHistoryType } from "@/app/lib/mockStatusHistory"
 import LeaveCard from "@/app/components/LeaveComp/LeaveCard";
 import { EmployeeWithNames } from "@/types/employeeWithNames";
+import { LeaveRequest } from "@/types/leaveRequest";
 
 
 
-export default function Employee({ employee, supervisor, isSupervisor, leaveHistory }: { employee: EmployeeWithNames, supervisor?: EmployeeWithNames, isSupervisor: boolean, leaveHistory: StatusHistoryType[] }) {
+export default function Employee({ employee, supervisor, isSupervisor, leaveHistory }: { employee: EmployeeWithNames, supervisor?: EmployeeWithNames, isSupervisor: boolean, leaveHistory: LeaveRequest[] }) {
     const router = useRouter();
 
 

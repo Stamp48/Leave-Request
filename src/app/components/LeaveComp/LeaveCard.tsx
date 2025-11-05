@@ -1,8 +1,7 @@
 "use client"
 // FIXED: Import new snake_case types
-import { StatusHistoryType } from "@/app/lib/mockStatusHistory";
-import { LeaveStatus } from "@/app/lib/mockDataLeaveRequest";
-import { useRouter } from "next/navigation"; 
+import { LeaveStatus } from "@/types/leaveStatus";
+import { useRouter } from "next/navigation";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
@@ -10,6 +9,8 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
+import { StatusHistory } from "@/types/statusHistory";
+import { LeaveRequest } from "@/types/leaveRequest";
 
 // FIXED: Helper function to get a color for all new statuses
 const getStatusColor = (status: LeaveStatus) => {
@@ -32,7 +33,7 @@ const getStatusColor = (status: LeaveStatus) => {
 };
 
 // FIXED: Use the new StatusHistoryType
-export default function LeaveCard({ leaveHistory }: { leaveHistory: StatusHistoryType[] }) {
+export default function LeaveCard({ leaveHistory }: { leaveHistory: LeaveRequest[] }) {
   const router = useRouter(); // 2. Initialize the router
 
   return (
@@ -45,12 +46,13 @@ export default function LeaveCard({ leaveHistory }: { leaveHistory: StatusHistor
             <Typography>No leave history found.</Typography>
           ) : (
             leaveHistory.map((item, index) => (
-              <Box key={item.timestamp}>
+              <Box key={`${item.requestID}-${new Date(item.latestTimestamp).getTime()}`}>
+
 
                 {/* 3. Wrap the content in a clickable Box */}
                 <Box
                   // FIXED: Update to snake_case path and property
-                  onClick={() => router.push(`/leave-requests/${item.request_id}`)} 
+                  onClick={() => router.push(`/leave-requests/${item.requestID}`)}
                   sx={{
                     cursor: 'pointer',
                     padding: '8px',
@@ -70,12 +72,12 @@ export default function LeaveCard({ leaveHistory }: { leaveHistory: StatusHistor
                   >
                     <Typography variant="h6" component="div">
                       {/* FIXED: Use property from new type */}
-                      Request ID: {item.request_id} 
+                      Request ID: {item.requestID}
                     </Typography>
                     <Chip
-                      label={item.status}
+                      label={item.latestStatus}
                       // FIXED: Cast to 'any' to allow dynamic color strings
-                      color={getStatusColor(item.status) as any} 
+                      color={getStatusColor(item.latestStatus) as any}
                       size="small"
                       sx={{ textTransform: 'capitalize' }} // Added for consistency
                     />
@@ -83,10 +85,10 @@ export default function LeaveCard({ leaveHistory }: { leaveHistory: StatusHistor
 
                   <Typography variant="body2" color="text.secondary">
                     {/* FIXED: Use property from new type */}
-                    Updated by: Employee {item.employee_id} 
+                    Updated by: Employee {item.employeeID}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    {new Date(item.timestamp).toLocaleString()}
+                    {new Date(item.latestTimestamp).toLocaleString()}
                   </Typography>
                 </Box>
                 {/* End of clickable Box */}
