@@ -1,206 +1,211 @@
-"use client"
-import EmployeeDetail from "@/app/components/EmployeeComp/EmployeeDetail";
+"use client";
+
+import { useMemo, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import EmployeeCard from "@/app/components/EmployeeComp/EmployeeCard";
-import CardHeader from '@mui/material/CardHeader';
-import { useRouter } from "next/navigation";
-import { EmployeeType } from "@/app/lib/mockDataEmp";
-import Button from "@mui/material/Button";
-import EmployeeEdit from "@/app/components/EmployeeComp/EmployeeEdit";
-import { useState, useEffect, useMemo } from "react"; // Added useMemo
-import dayjs from "dayjs";
-import { getSupervisorsByDivision } from "@/app/lib/utils";
-// Import PositionType, adjust path as needed
-import { PositionType } from "@/app/lib/mockPosition"; 
-// NEW: Import Paper for the sticky action bar
 import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+import dayjs from "dayjs";
 
+import { EmployeeWithNames } from "@/types/employeeWithNames";
+import { Position } from "@/types/position";
+import EmployeeEdit from "@/app/components/EmployeeComp/EmployeeEdit";
 
-interface FormData {
-    employee_id: number;
-    first_name: string;
-    last_name: string;
+type Errors = Record<string, string>;
+
+type FormData = {
+    employeeID: number;
+    firstName: string;
+    lastName: string;
     email: string;
     division: string;
     department: string;
     position: string;
     phone: string;
-    hire_date: string;
-    birth_date: string;
-    supervisor_id: number | null;
+    hireDate: string;   // ISO
+    birthDate: string;  // ISO
+    supervisorID: number | null;
     address: string;
-    profile_picture: string;
-}
+    profilePicture: string; // base64 หรือ URL
+};
 
-/**
- * Main component for editing an employee's details.
- * LOGIC FIXED: Now assumes Division > Department hierarchy.
- */
 export default function EditEmployee({
     employee,
     supervisor,
     isSupervisor,
     orgHierarchyData,
     allEmployees,
-    allPositions // NEW: Accept allPositions prop
+    allPositions,
 }: {
-    employee: EmployeeType,
-    supervisor?: EmployeeType,
-    isSupervisor: boolean,
-    orgHierarchyData: Record<string, string[]>,
-    allEmployees: EmployeeType[],
-    allPositions: PositionType[] // NEW: Type for allPositions
+    employee: EmployeeWithNames;
+    supervisor?: EmployeeWithNames;
+    isSupervisor: boolean;
+    orgHierarchyData: Record<string, string[]>;
+    allEmployees: EmployeeWithNames[];
+    allPositions: Position[];
 }) {
-    // --- ALL HOOKS MUST BE AT THE TOP ---
-    const router = useRouter();
-
     const [formData, setFormData] = useState<FormData>({
-        employee_id: employee.employee_id,
-        first_name: employee.first_name,
-        last_name: employee.last_name,
-        email: employee.email,
-        division: employee.division,
-        department: employee.department,
-        position: employee.position,
-        phone: employee.phone,
-        hire_date: employee.hire_date,
-        birth_date: employee.birth_date,
-        address: employee.address,
-        profile_picture: employee.profile_picture,
-        supervisor_id: employee.supervisor_id
+        employeeID: employee.employeeID,
+        firstName: employee.firstName ?? "",
+        lastName: employee.lastName ?? "",
+        email: employee.email ?? "",
+        division: employee.divisionName ?? "",
+        department: employee.departmentName ?? "",
+        position: employee.positionName ?? "",
+        phone: employee.phone ?? "",
+        hireDate: employee.hireDate ? dayjs(employee.hireDate).toISOString() : "",
+        birthDate: employee.birthDate ? dayjs(employee.birthDate).toISOString() : "",
+        supervisorID: employee.supervisorID ?? null,
+        address: employee.address ?? "",
+        profilePicture: employee.profilePicture ?? "",
     });
 
-    type Errors = Record<string, string>;
     const [errors, setErrors] = useState<Errors>({});
-
-    // This state now holds the departments available for the *selected* division
     const [availableDepartments, setAvailableDepartments] = useState<string[]>([]);
 
-    // Use useMemo for derived values
+    const allDivisions = useMemo(() => Object.keys(orgHierarchyData || {}), [orgHierarchyData]);
+
     const supervisorsInDiv = useMemo(() => {
-        return getSupervisorsByDivision(allEmployees, employee?.division || "");
-    }, [allEmployees, employee?.division]);
+        if (!formData.division) return [];
+        return allEmployees.filter(e => e.divisionName === formData.division);
+    }, [allEmployees, formData.division]);
 
-    const allDivisions = useMemo(() => {
-        // Add fallback for safety during initial render
-        return Object.keys(orgHierarchyData || {});
-    }, [orgHierarchyData]);
-    
-    // FIXED: This hook now sets the *initial department list* based on the
-    // employee's *current division* when the component loads.
     useEffect(() => {
-        if (employee.division && orgHierarchyData) {
-            // Set the initial list of departments based on the employee's division
-            setAvailableDepartments(orgHierarchyData[employee.division] || []);
-        }
-    }, [employee.division, orgHierarchyData]);
-    
-    // --- END OF HOOKS ---
-
+        const deps = formData.division ? (orgHierarchyData[formData.division] || []) : [];
+        setAvailableDepartments(deps);
+    }, [formData.division, orgHierarchyData]);
 
     const validate = () => {
-        const tempErrors: Errors = {};
-        if (!formData.first_name) tempErrors.firstname = "First name is required.";
-        if (!formData.last_name) tempErrors.lastname = "Last name is required.";
-        if (!formData.email) tempErrors.email = "Email is required.";
-        if (!formData.birth_date) tempErrors.birthDate = "Birth date is required.";
-        if (!formData.department) tempErrors.department = "Department is required.";
-        if (!formData.division) tempErrors.division = "Division is required.";
-        // NEW: Added validation for position
-        if (!formData.position) tempErrors.position = "Position is required.";
-        setErrors(tempErrors);
-        return Object.keys(tempErrors).length === 0;
+        const temp: Errors = {};
+        if (!formData.firstName) temp.firstName = "First name is required.";
+        if (!formData.lastName) temp.lastName = "Last name is required.";
+        if (!formData.email) temp.email = "Email is required.";
+        if (!formData.division) temp.division = "Division is required.";
+        if (!formData.department) temp.department = "Department is required.";
+        if (!formData.position) temp.position = "Position is required.";
+        if (!formData.birthDate) temp.birthDate = "Birth date is required.";
+        setErrors(temp);
+        return Object.keys(temp).length === 0;
     };
 
-
-    // RENAMED & FIXED: This function now handles the DIVISION change
     const handleDivisionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedDivision = e.target.value;
-
-        // Get the new list of departments for the selected division
-        const newDepartments = orgHierarchyData[selectedDivision] || [];
-
-        setFormData({
-            ...formData,
+        const deps = orgHierarchyData[selectedDivision] || [];
+        setFormData(prev => ({
+            ...prev,
             division: selectedDivision,
-            department: "", // Reset department, as the old one is no longer valid
-            position: "", // Also reset position if it's tied to department/division
-        });
-
-        // Update the state to populate the department dropdown
-        setAvailableDepartments(newDepartments);
+            department: "",
+            position: "",
+        }));
+        setAvailableDepartments(deps);
+        setErrors(prev => ({ ...prev, division: "", department: "", position: "" }));
     };
 
-    // This handler is for simple text inputs, including the Department dropdown
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        const { name, value } = e.target as { name: keyof FormData; value: string };
+        setFormData(prev => ({ ...prev, [name]: value } as FormData));
+        setErrors(prev => ({ ...prev, [name]: "" }));
     };
 
-    const handleChangeDate = (name: string, date: any) => {
-        const formattedDate = date ? dayjs(date).toISOString() : "";
-        setFormData((prev) => ({ ...prev, [name]: formattedDate }));
-    }
-
-    const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            // Read the file as a data URL
-            const reader = new FileReader();
-            reader.onload = () => {
-                setFormData((prev) => ({ ...prev, profile_picture: reader.result as string }));
-            };
-            reader.readAsDataURL(file);
-        }
+    const handleChangeDate = (name: "hireDate" | "birthDate", date: any) => {
+        setFormData(prev => ({ ...prev, [name]: date ? dayjs(date).toISOString() : "" }));
+        setErrors(prev => ({ ...prev, [name]: "" }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => setFormData(prev => ({ ...prev, profilePicture: String(reader.result) }));
+        reader.readAsDataURL(file);
+    };
+
+    // ...ใน EditEmployeeCSR.tsx ข้างใน component เดิม
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (validate()) {
-            // Here you would typically send formData to your backend API
-            console.log("Updated Employee Data:", formData);
-            // After successful update, navigate back
-            router.push(`/employees/${employee.employee_id}`);
+        if (!validate()) return;
+
+        const id = formData.employeeID;
+
+        // สร้าง payload แบบข้อความ (snake_case เฉพาะตอนยิง API)
+        const jsonPayload = {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            email: formData.email,
+            division_name: formData.division,
+            department_name: formData.department,
+            position_name: formData.position,
+            phone: formData.phone,
+            hire_date: formData.hireDate ? dayjs(formData.hireDate).format("YYYY-MM-DD") : null,
+            birth_date: formData.birthDate ? dayjs(formData.birthDate).format("YYYY-MM-DD") : null,
+            supervisor_id: formData.supervisorID,
+            address: formData.address,
+            // ถ้ารูปเป็น URL เดิม (ไม่ใช่ dataURL) จะไม่แนบรูปใน JSON นี้
+        };
+
+        let res: Response;
+
+        // ถ้า profilePicture เป็น dataURL => สร้าง FormData เพื่ออัพโหลดรูป
+        if (formData.profilePicture && formData.profilePicture.startsWith("data:")) {
+            // แปลง dataURL → Blob
+            const dataUrl = formData.profilePicture;
+            const [head, bodyBase64] = dataUrl.split(",");
+            const mime = head.match(/data:(.*);base64/)?.[1] || "image/jpeg";
+            const bin = atob(bodyBase64);
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+            const blob = new Blob([bytes], { type: mime });
+
+            const fd = new FormData();
+            // ข้อมูลข้อความ
+            Object.entries(jsonPayload).forEach(([k, v]) => {
+                if (v !== undefined && v !== null) fd.append(k, String(v));
+            });
+            // แนบไฟล์จริง
+            fd.append("profile_picture", blob, `avatar_${id}.png`);
+
+            res = await fetch(`/api/employee/${id}`, {
+                method: "PUT",
+                body: fd, // ❗️ห้ามตั้ง Content-Type เอง
+            });
+        } else {
+            // ไม่มีการเปลี่ยนรูป → ส่ง JSON ธรรมดา
+            res = await fetch(`/api/employee/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(jsonPayload),
+            });
         }
+
+        if (!res.ok) {
+            const txt = await res.text();
+            console.error("Update failed:", txt);
+            setErrors(prev => ({ ...prev, form: "Update failed." }));
+            return;
+        }
+
+        // กลับหน้า detail
+        window.location.href = `/employees/${id}`;
     };
 
-    // Loading check (safe to do after hooks)
+
     if (!orgHierarchyData || !allPositions) {
         return <Typography>Loading organization data...</Typography>;
     }
 
     return (
-        // The form tag is now on the main container
-        <Box 
-            onSubmit={handleSubmit} 
-            component="form" 
-            sx={{ 
-                display: "flex", 
-                flexDirection: "column", 
-                minHeight: "100vh", // Ensure it fills the screen
-                backgroundColor: "#2E8EE4" // FIXED: Reverted to blue background
-            }}
+        <Box
+            onSubmit={handleSubmit}
+            component="form"
+            sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", backgroundColor: "#2E8EE4" }}
         >
-            {/* 1. Header Area */}
-            <Box sx={{ p: 4, pb: 1 }}> {/* Reduced bottom padding */}
-                {/* FIXED: Reverted to white text */}
-                <Typography variant="h3" color="white"> 
-                    Edit Employee Detail
-                </Typography>
+            <Box sx={{ p: 4, pb: 1 }}>
+                <Typography variant="h3" color="white">Edit Employee Detail</Typography>
             </Box>
 
-            {/* 2. Main Form Content Area */}
-            <Box sx={{ 
-                display: "flex", 
-                justifyContent: "center", // Center the card
-                px: 4, // Padding on the sides
-                pb: '120px' // Padding at the bottom to avoid sticky footer
-            }}>
-                {/* Constrain the width of the form card for better readability */}
-                <Box sx={{ width: '100%', maxWidth: '1200px', paddingTop:"20px"}}>
+            <Box sx={{ display: "flex", justifyContent: "center", px: 4, pb: "120px" }}>
+                <Box sx={{ width: "100%", maxWidth: "1200px", paddingTop: "20px" }}>
                     <EmployeeEdit
                         formData={formData}
                         handleChange={handleChange}
@@ -211,43 +216,17 @@ export default function EditEmployee({
                         handleChangeDate={handleChangeDate}
                         errors={errors}
                         handleAvatarChange={handleAvatarChange}
-                        allPositions={allPositions} // FIXED: Pass positions
+                        allPositions={allPositions}
                     />
                 </Box>
             </Box>
 
-            {/* 3. Sticky Action Bar at the bottom (Kept) */}
-            <Paper 
-                elevation={3} 
-                sx={{ 
-                    position: 'sticky', 
-                    bottom: 0, 
-                    zIndex: 1100, // Make sure it's on top
-                    backgroundColor: 'white'
-                }}
-            >
-                <Box 
-                    sx={{ 
-                        display: 'flex', 
-                        justifyContent: 'flex-end', 
-                        gap: 2, 
-                        p: 2,
-                        // Constrain width and center it
-                        maxWidth: '1240px', // Match content width + padding
-                        mx: 'auto'
-                    }}
-                >
-                    <Button 
-                        variant="outlined" 
-                        color="secondary" 
-                        onClick={() => router.back()} // Good UX
-                    >
+            <Paper elevation={3} sx={{ position: "sticky", bottom: 0, zIndex: 1100, backgroundColor: "white" }}>
+                <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, p: 2, maxWidth: "1240px", mx: "auto" }}>
+                    <Button variant="outlined" color="secondary" onClick={() => history.back()}>
                         Cancel
                     </Button>
-                    <Button 
-                        type="submit" 
-                        variant="contained"
-                    >
+                    <Button type="submit" variant="contained">
                         Save Changes
                     </Button>
                 </Box>
@@ -255,4 +234,3 @@ export default function EditEmployee({
         </Box>
     );
 }
-
