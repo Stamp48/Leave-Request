@@ -121,7 +121,7 @@ export default function LeaveTable({ rows }: { rows: LeaveRequest[] }) { // FIXE
                                     hover
                                     sx={{ cursor: "pointer" }}
                                     // FIXED: Use camelCase
-                                    onClick={() => router.push(`/leave-requests/${row.requestID}`)}
+                                    onClick={() => router.push(`/leaveRequests/${row.requestID}`)}
                                 >
                                     {columns.map((column) => {
                                         return (

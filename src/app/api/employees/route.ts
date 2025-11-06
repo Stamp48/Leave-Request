@@ -14,14 +14,16 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const payload = await req.json();
+  // ✅ รับ multipart/form-data จาก client
+  const form = await req.formData();
+
+  // ✅ forward ไป Go ตรง ๆ แบบ multipart
   const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/employee`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: form,                     // Web FormData → multipart ให้อัตโนมัติ
+    // ❌ ห้ามตั้ง Content-Type เอง
   });
 
-  // passthrough response
   const text = await res.text();
   return new Response(text, {
     status: res.status,

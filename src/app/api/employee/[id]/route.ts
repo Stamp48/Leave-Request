@@ -4,7 +4,7 @@ import { EmployeeWithNamesDTO } from "@/types/employeeWithNames.dto";
 import { NextRequest } from "next/server";
 
 export async function GET(_req: NextRequest, { params }: { params : {id: string} }) {
-    const { id } = params;
+    const { id } = await params;
     const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/employee/${id}`)
 
     if (res.status === 404) {

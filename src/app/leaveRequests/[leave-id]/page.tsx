@@ -1,33 +1,68 @@
-// FIXED: Import from your 'camelCase' files
-import { mockLeaveRequests } from "@/app/lib/mockDataLeaveRequest";
-import LeaveRequest from "./LeaveRequestCSR";
-import { mockStatusHistory } from "@/app/lib/mockStatusHistory";
-// 1. Import mockAttachments (assuming this is the correct path)
-import { mockAttachments } from "@/app/lib/mockAttachment";
+import type { LeaveRequest } from "@/types/leaveRequest";
+import type { StatusHistory } from "@/types/statusHistory";
+import type { Attachment } from "@/types/attachment";
 
-export default function LeaveRequestPage({ params }: { params: { "leave-id": string } }) {
-    const leaveId = params["leave-id"]; // This is a string, e.g., "5"
+import LeaveRequestDetail from "./LeaveRequestCSR"; // 2. This is the client component
+import { notFound } from "next/navigation";
+import { Typography } from "@mui/material";
 
-    // Find request
-    const leaveRequest = mockLeaveRequests.find(lr => lr.request_id.toString() === leaveId);
+// --- Helper Functions to Fetch Data ---
 
-    if (!leaveRequest) return <h1>Leave Request not found</h1>;
+async function getLeaveRequest(id: string): Promise<LeaveRequest | null> {
+  const res = await fetch(`${process.env.APP_ORIGIN}/api/leave-requests/${id}`, { cache: "no-store" });
+  if (!res.ok) return null;
+  return res.json();
+}
 
-    // Filter history
-    const requestHistory = mockStatusHistory
-        .filter(item => item.request_id.toString() === leaveId)
-        .sort((a, b) =>
-            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-        );
+async function getRequestHistory(id: string): Promise<StatusHistory[]> {
+  const res = await fetch(`${process.env.APP_ORIGIN}/api/status-history/${id}`, { cache: "no-store" });
+  if (!res.ok) return [];
+  const data = await res.json();
+  // Sort by most recent update first
+  return data.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+}
 
-    // 2. NEW: Filter the attachments list
-    const requestAttachments = mockAttachments
-        .filter(item => item.request_id.toString() === leaveId);
+async function getRequestAttachments(id: string): Promise<Attachment[]> {
+  // Your API routes don't have a "get by request ID" endpoint for attachments.
+  // So, we must fetch all attachments and filter them.
+  const res = await fetch(`${process.env.APP_ORIGIN}/api/attachments`, { cache: "no-store" });
+  if (!res.ok) return [];
+  const allAttachments: Attachment[] = await res.json();
+  
+  // Filter for this request ID
+  const numericId = parseInt(id, 10);
+  return allAttachments.filter(att => att.requestID === numericId);
+}
+// --- End Helper Functions ---
 
-    // 3. Pass all three props
-    return <LeaveRequest
-        leaveRequest={leaveRequest}
-        history={requestHistory}
-        attachments={requestAttachments} // Pass the filtered list
-    />;
+
+export default async function LeaveRequestDetailPage({ params }: { params: { "request-id": string } }) {
+  
+  const requestId = params["request-id"]; // This is a string, e.g., "5"
+
+  try {
+    // --- Fetch all data in parallel ---
+    const [leaveRequest, history, attachments] = await Promise.all([
+      getLeaveRequest(requestId),
+      getRequestHistory(requestId),
+      getRequestAttachments(requestId)
+    ]);
+
+    // Handle case where request isn't found
+    if (!leaveRequest) {
+      notFound();
+    }
+    
+    // 4. Pass all three clean, camelCase props to your client component
+    return (
+      <LeaveRequestDetail 
+        leaveRequest={leaveRequest} 
+        history={history} 
+        attachments={attachments} 
+      />
+    );
+  } catch (error) {
+    console.error("Failed to fetch leave request details:", error);
+    return <Typography>Error loading leave request.</Typography>
+  }
 }

@@ -25,6 +25,7 @@ const formatDate = (d: Date | string | null | undefined) => {
 };
 
 export default function EmployeeDetail({ employee, handleClickOpen, handleClose, open }: { employee: EmployeeWithNames, handleClickOpen?: () => void, handleClose?: () => void, open: boolean }) {
+  console.log(employee)
   const router = useRouter();
   return (
     <>

@@ -24,6 +24,7 @@ interface NewEmployeeFormData {
   position: string;
   phone: string;
   birth_date: string;
+  address: string;
 }
 
 type Errors = Record<string, string>;
@@ -64,6 +65,7 @@ export default function AddEmployee({
     position: "",
     phone: "",
     birth_date: "",
+    address: "",
   });
 
   const [availableDepartments, setAvailableDepartments] = useState<string[]>(
@@ -205,11 +207,12 @@ export default function AddEmployee({
     return Object.keys(temp).length === 0;
   };
 
+  // ... โค้ดด้านบนเหมือนเดิม
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
-    // (1) หา id จากชื่อที่ผู้ใช้เลือก
     const selectedPosition = allPositions.find(p => p.positionName === formData.position);
     const position_id = selectedPosition?.positionID ?? 0;
 
@@ -225,33 +228,32 @@ export default function AddEmployee({
       return;
     }
 
-    // (2) เตรียม password เริ่มต้น (หรือปล่อยให้ผู้ใช้กรอกก็ได้)
     const password = generateRandomPassword();
 
-    // (3) เตรียม payload ตามที่ Go รับ (snake_case)
-    const payload = {
-      email: formData.email,
-      password,                           // ✅ Go จะ hash เองใน repo.Save
-      first_name: formData.first_name,
-      last_name: formData.last_name,
-      phone: formData.phone || "",
-      address: "",
-      profile_picture: imagePreview || "", // ถ้าอยากอัพโหลดไฟล์จริง แนะนำใช้ multipart (ตัวอย่างด้านล่าง)
-      first_login: true,
-      hire_date: dayjs().format("YYYY-MM-DD"),
-      birth_date: dayjs(formData.birth_date).format("YYYY-MM-DD"),
-      supervisor_id: null,
-      department_id,
-      position_id,
-    };
+    // ✅ ใช้ FormData
+    const fd = new FormData();
+    fd.append("email", formData.email);
+    fd.append("password", password);
+    fd.append("first_name", formData.first_name);
+    fd.append("last_name", formData.last_name);
+    fd.append("phone", formData.phone || "");
+    fd.append("address", formData.address || "");
+    fd.append("first_login", "true");
+    fd.append("hire_date", dayjs().format("YYYY-MM-DD"));
+    fd.append("birth_date", dayjs(formData.birth_date).format("YYYY-MM-DD"));
+    fd.append("supervisor_id", ""); // หรือใส่เป็นเลข/เว้นว่าง
+    fd.append("department_id", String(department_id));
+    fd.append("position_id", String(position_id));
 
-    // (4) ยิงไป backend (ถ้า CORS เปิดเรียบร้อย ยิงตรงได้)
+    // ✅ แนบไฟล์จริง (ไม่ใช่ dataURL)
+    if (imageFile) {
+      fd.append("profile_picture", imageFile, imageFile.name);
+    }
+
     const res = await fetch(`/api/employees`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: fd,               // ❗️อย่าใส่ Content-Type เอง
     });
-
 
     if (!res.ok) {
       const txt = await res.text();
@@ -260,11 +262,10 @@ export default function AddEmployee({
       return;
     }
 
-    const created = await res.json(); // { employee_id, ... }
-    // ไปหน้า detail ของพนักงานที่สร้าง หรือกลับ list
-    // router.push(`/employees/${created.employee_id}`);
+    // สำเร็จ
     router.push("/employees");
   };
+
 
 
   return (
@@ -415,6 +416,20 @@ export default function AddEmployee({
           error={!!errors.phone}
           helperText={errors.phone || ""}
         />
+
+        {/* Address (multiline) */}
+        <TextField
+          label="Address"
+          name="address"
+          value={formData.address}
+          onChange={handleChange}
+          error={!!errors.address}
+          helperText={errors.address || ""}
+          multiline
+          minRows={3}          // สูงขึ้นหน่อย
+          fullWidth
+        />
+
 
         {/* Birth Date */}
         <LocalizationProvider dateAdapter={AdapterDayjs}>
