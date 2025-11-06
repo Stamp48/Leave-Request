@@ -9,7 +9,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
   const { reason } = await req.json().catch(() => ({ reason: "" }));
   const payload = { action: "REVOKE", reason }; // ✅ ให้ Go เปลี่ยนสถานะ + บันทึกเหตุผล
 
-  const r = await fetch(`${BACKEND}/api/leave-request/${id}`, {
+  const r = await fetch(`${BACKEND}/api/leaveRequestHR/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

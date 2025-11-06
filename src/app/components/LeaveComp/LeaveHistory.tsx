@@ -20,17 +20,45 @@ const getStatusColor = (status: LeaveStatus) => {
     case 'รออนุมัติ':
       return 'warning';
     case 'Canceled':
-      return 'default'; // Gray
+      return 'default';
     case 'Modified':
-      return 'info'; // Blue
+      return 'info';
     case 'เพิกถอน':
-      return 'secondary'; // Purple
+      return 'secondary';
     default:
       return 'default';
   }
 };
 
-// FIXED: Use the new StatusHistory type
+// Helper function to safely format timestamp
+const formatTimestamp = (timestamp: any): string => {
+  if (!timestamp) return 'No timestamp';
+  
+  try {
+    if (timestamp instanceof Date) {
+      return timestamp.toLocaleString();
+    }
+    return new Date(timestamp).toLocaleString();
+  } catch {
+    return 'Invalid timestamp';
+  }
+};
+
+// Helper function to generate a safe key
+const generateKey = (item: StatusHistory, index: number): string => {
+  if (item.timestamp) {
+    try {
+      if (item.timestamp instanceof Date) {
+        return item.timestamp.toISOString();
+      }
+      return String(item.timestamp);
+    } catch {
+      // Fall through to fallback
+    }
+  }
+  return `${item.employeeID}-${index}`;
+};
+
 export default function LeaveHistory({ history }: { history: StatusHistory[] }) {
   
   return (
@@ -43,8 +71,7 @@ export default function LeaveHistory({ history }: { history: StatusHistory[] }) 
             <Typography>No status history found.</Typography>
           ) : (
             history.map((item, index) => (
-              // FIXED: Use camelCase timestamp (which is a Date object)
-              <Box key={item.timestamp.toISOString()}> 
+              <Box key={generateKey(item, index)}> 
                 
                 <Box 
                   sx={{ 
@@ -65,15 +92,12 @@ export default function LeaveHistory({ history }: { history: StatusHistory[] }) 
                   />
                 </Box>
                 
-                {/* FIXED: Use camelCase */}
                 <Typography variant="body2" color="text.secondary">
                   By: Employee {item.employeeID}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  {/* FIXED: Format Date object */}
-                  {new Date(item.timestamp).toLocaleString()}
+                  {formatTimestamp(item.timestamp)}
                 </Typography>
-
                 {index < history.length - 1 && <Divider sx={{ mt: 2 }} />}
               </Box>
             ))

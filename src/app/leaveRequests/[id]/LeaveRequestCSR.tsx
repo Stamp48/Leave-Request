@@ -53,23 +53,23 @@ const formatDurationDetails = (request: LeaveRequest): string => {
 };
 
 
-export default function LeaveRequestDetail({ 
-  leaveRequest, 
-  history, 
-  attachments
-}: { 
-  leaveRequest: LeaveRequest, 
-  history: StatusHistory[],
-  attachments: Attachment[] 
+export default function LeaveRequestDetail({
+    leaveRequest,
+    history,
+    attachments
+}: {
+    leaveRequest: LeaveRequest,
+    history: StatusHistory[],
+    attachments: Attachment[]
 }) {
     const router = useRouter();
     const today = startOfDay(new Date());
-    
+
     // 4. Use useTransition for loading state
     const [isPending, startTransition] = useTransition();
 
     // FIXED: startDate is already a Date object
-    const startDate = startOfDay(leaveRequest.startDate); 
+    const startDate = startOfDay(leaveRequest.startDate);
 
     // FIXED: Use camelCase
     const canRevoke =
@@ -82,27 +82,27 @@ export default function LeaveRequestDetail({
     const handleClickOpen = () => setOpen(true);
     const handleClose = () => {
         setOpen(false);
-        setRevokeReason(""); 
+        setRevokeReason("");
     };
 
     // 5. IMPLEMENTED: handleRevokeSubmit
     const handleRevokeSubmit = async () => {
-  startTransition(async () => {
-    try {
-      const res = await fetch(`/api/leave-requests/${leaveRequest.requestID}/revoke`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason: revokeReason })
-      });
+        startTransition(async () => {
+            try {
+                const res = await fetch(`/api/leave-requests/${leaveRequest.requestID}/revoke`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason: revokeReason })
+                });
 
-      if (!res.ok) throw new Error(await res.text());
-      handleClose();
-      router.refresh();
-    } catch (e) {
-      console.error("Revoke failed:", e);
-    }
-  });
-};
+                if (!res.ok) throw new Error(await res.text());
+                handleClose();
+                router.refresh();
+            } catch (e) {
+                console.error("Revoke failed:", e);
+            }
+        });
+    };
 
 
     return (
@@ -164,26 +164,27 @@ export default function LeaveRequestDetail({
 
                         {/* === ATTACHMENT SECTION (FIXED) === */}
                         {attachments && attachments.length > 0 && (
-                          <Box sx={{ paddingLeft: "30px", my: "20px" }}>
-                            <Typography variant="h6" gutterBottom>Attachments</Typography>
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                              {attachments.map((file) => (
-                                <Button
-                                  key={file.attachmentID} // FIXED: Use camelCase
-                                  component="a" 
-                                  href={file.url}      
-                                  target="_blank"     
-                                  rel="noopener noreferrer"
-                                  variant="outlined"
-                                  startIcon={<ArticleOutlinedIcon />}
-                                  sx={{ textTransform: 'none', justifyContent: 'flex-start' }}
-                                >
-                                  {file.name}
-                                </Button>
-                              ))}
+                            <Box sx={{ paddingLeft: "30px", my: "20px" }}>
+                                <Typography variant="h6" gutterBottom>Attachments</Typography>
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                    {attachments.map((file) => (
+                                        <Button
+                                            key={file.attachmentID}
+                                            component="a"
+                                            href={`/api/attachment/${file.attachmentID}`}  // ✅ เปลี่ยนมาใช้ route ของเรา
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            variant="outlined"
+                                            startIcon={<ArticleOutlinedIcon />}
+                                            sx={{ textTransform: 'none', justifyContent: 'flex-start' }}
+                                        >
+                                            {file.name}
+                                        </Button>
+                                    ))}
+                                </Box>
                             </Box>
-                          </Box>
                         )}
+
                         {/* === END OF ATTACHMENT SECTION === */}
 
 
@@ -199,7 +200,7 @@ export default function LeaveRequestDetail({
 
                             <Dialog
                                 open={open}
-                                onClose={handleClose} 
+                                onClose={handleClose}
                             >
                                 <DialogTitle id="alert-dialog-title">
                                     {"Confirm Request Revocation"}
@@ -231,7 +232,7 @@ export default function LeaveRequestDetail({
                                         onClick={handleRevokeSubmit}
                                         color="warning"
                                         // Disable if no reason OR if pending
-                                        disabled={!revokeReason || isPending} 
+                                        disabled={!revokeReason || isPending}
                                     >
                                         {isPending ? "Revoking..." : "Revoke"}
                                     </Button>
