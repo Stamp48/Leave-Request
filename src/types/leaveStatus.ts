@@ -1,1 +1,1 @@
-export type LeaveStatus = 'Pending' | 'Approved' | 'Rejected' | 'Canceled' | 'Modified' | 'Revoked';
+export type LeaveStatus = 'รออนุมัติ' | 'อนุมัติ' | 'ปฏิเสธ' | 'Canceled' | 'Modified' | 'เพิกถอน';

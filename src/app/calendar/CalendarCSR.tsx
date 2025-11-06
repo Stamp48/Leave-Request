@@ -6,17 +6,25 @@ import { CalendarUI } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import LeaveTable from "../components/LeaveComp/LeaveTable";
-import { LeaveRequestType } from "../lib/mockDataLeaveRequest";
+// 1. Import the REAL UI type
+import { LeaveRequest } from "@/types/leaveRequest";
 import { filterRequestsByRange } from "@/app/lib/utils"
 
-export default function Calendar({ initialRows }: { initialRows: LeaveRequestType[] }) {
+// 2. Use the REAL UI type here
+export default function Calendar({ initialRows }: { initialRows: LeaveRequest[] }) {
 
     const [date, setDate] = React.useState<DateRange | undefined>({
         from: new Date(),
         to: new Date()
     });
+
+    // 3. This useMemo hook now works correctly because:
+    //    - 'initialRows' is LeaveRequest[]
+    //    - 'filterRequestsByRange' is updated to also use LeaveRequest[]
     const filteredRows = React.useMemo(() => {
-        return filterRequestsByRange(initialRows, date);
+        // Only show 'Approved' requests on the calendar
+        const approvedRows = initialRows.filter(row => row.latestStatus === 'อนุมัติ');
+        return filterRequestsByRange(approvedRows, date);
     }, [initialRows, date]);
 
     return (
@@ -34,8 +42,6 @@ export default function Calendar({ initialRows }: { initialRows: LeaveRequestTyp
                 alignItems: "center",
                 justifyContent: "flex-start",
                 paddingTop: "2rem",
-
-
             }}>
                 <CalendarUI
                     mode="range"
@@ -46,6 +52,7 @@ export default function Calendar({ initialRows }: { initialRows: LeaveRequestTyp
                     className="rounded-lg border"
                 />
 
+                {/* This is your custom UI change */}
                 <Typography variant="body1" color="white" sx={{ mt: 2, p: 1, bgcolor: '#2E8EE4', borderRadius: 1 }}>
                     Selected range: {" "}
                     {date?.from ? format(date.from, "PPP") : "Start Date"} -{" "}
@@ -54,9 +61,11 @@ export default function Calendar({ initialRows }: { initialRows: LeaveRequestTyp
             </Box>
 
             <Box sx={{ flex: 1, flexDirection: "column", display: "flex", alignItems: "start", justifyContent: "center", paddingX: "3rem", paddingY: "1rem" }}>
-                <Typography variant="h4" color="white" sx={{ paddingBottom: "1rem" }}>
+                {/* This is your custom UI change */}
+                <Typography variant="h4" color="primary.main" sx={{ paddingBottom: "1rem" }}>
                     Approved Leave Requests
                 </Typography>
+                {/* 4. LeaveTable is already updated to use camelCase, so this works */}
                 <LeaveTable rows={filteredRows} />
             </Box>
         </Box>

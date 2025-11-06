@@ -22,17 +22,12 @@ async function getRequestHistory(id: string): Promise<StatusHistory[]> {
   return data.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 }
 
-async function getRequestAttachments(id: string): Promise<Attachment[]> {
-  // Your API routes don't have a "get by request ID" endpoint for attachments.
-  // So, we must fetch all attachments and filter them.
-  const res = await fetch(`${process.env.APP_ORIGIN}/api/attachments`, { cache: "no-store" });
+async function getRequestAttachments(id: string) {
+  const res = await fetch(`${process.env.APP_ORIGIN}/api/attachment/leave-requests/${id}`, { cache: "no-store" });
   if (!res.ok) return [];
-  const allAttachments: Attachment[] = await res.json();
-  
-  // Filter for this request ID
-  const numericId = parseInt(id, 10);
-  return allAttachments.filter(att => att.requestID === numericId);
+  return res.json(); // Attachment[]
 }
+
 // --- End Helper Functions ---
 
 

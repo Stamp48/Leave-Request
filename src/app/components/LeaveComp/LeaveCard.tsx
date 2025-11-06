@@ -15,17 +15,17 @@ import { LeaveRequest } from "@/types/leaveRequest";
 // FIXED: Helper function to get a color for all new statuses
 const getStatusColor = (status: LeaveStatus) => {
   switch (status) {
-    case 'Approved':
+    case 'อนุมัติ':
       return 'success';
-    case 'Rejected':
+    case 'ปฏิเสธ':
       return 'error';
-    case 'Pending':
+    case 'รออนุมัติ':
       return 'warning';
     case 'Canceled':
       return 'default'; // Gray
     case 'Modified':
       return 'info'; // Blue
-    case 'Revoked':
+    case 'เพิกถอน':
       return 'secondary'; // Purple
     default:
       return 'default';

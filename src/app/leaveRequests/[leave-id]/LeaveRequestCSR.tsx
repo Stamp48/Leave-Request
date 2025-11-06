@@ -11,7 +11,7 @@ import { calculateLeaveDuration } from "@/app/lib/utils"; // This util is now ca
 import { useRouter } from "next/navigation";
 import { parseISO, startOfDay } from "date-fns";
 // 2. Import useTransition
-import { useState, useTransition, React } from "react";
+import { useState, useTransition } from "react";
 import LeaveHistory from "@/app/components/LeaveComp/LeaveHistory";
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 
@@ -20,6 +20,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import React from "react";
 
 
 /**
@@ -72,7 +73,7 @@ export default function LeaveRequestDetail({
 
     // FIXED: Use camelCase
     const canRevoke =
-        leaveRequest.latestStatus === "Approved" &&
+        leaveRequest.latestStatus === "อนุมัติ" &&
         startDate > today;
 
     const [open, setOpen] = useState(false);
@@ -86,27 +87,22 @@ export default function LeaveRequestDetail({
 
     // 5. IMPLEMENTED: handleRevokeSubmit
     const handleRevokeSubmit = async () => {
-        startTransition(async () => {
-            try {
-                const res = await fetch(`/api/leave-requests/${leaveRequest.requestID}/revoke`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ reason: revokeReason })
-                });
+  startTransition(async () => {
+    try {
+      const res = await fetch(`/api/leave-requests/${leaveRequest.requestID}/revoke`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: revokeReason })
+      });
 
-                if (!res.ok) {
-                    throw new Error('Failed to revoke request');
-                }
-                
-                handleClose(); // Close the dialog
-                router.refresh(); // Refresh the page to show new status
-
-            } catch (error) {
-                console.error("Revoke failed:", error);
-                // TODO: Show an error message to the user
-            }
-        });
-    };
+      if (!res.ok) throw new Error(await res.text());
+      handleClose();
+      router.refresh();
+    } catch (e) {
+      console.error("Revoke failed:", e);
+    }
+  });
+};
 
 
     return (
@@ -160,7 +156,7 @@ export default function LeaveRequestDetail({
                         </Box>
 
                         {/* FIXED: Use camelCase */}
-                        {leaveRequest.latestStatus === "Rejected" && (
+                        {leaveRequest.latestStatus === "ปฏิเสธ" && (
                             <Box sx={{ display: "grid", gridTemplateColumns: "1fr", gap: 2, paddingLeft: "30px", my: "20px" }}>
                                 <Detail label="Supervisor's Reason" text={leaveRequest.rejectReason || "N/A"} />
                             </Box>

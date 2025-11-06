@@ -12,7 +12,7 @@ import { ChartPieLabel } from "@/components/chart-pie-label"
 // --- Import your REAL UI types ---
 import type { ChartConfig } from "@/components/ui/chart"
 // FIXED: Import the REAL UI types
-import { LeaveRequest } from "@/types/leaveRequest" 
+import { LeaveRequest } from "@/types/leaveRequest"
 import { EmployeeWithNames } from "@/types/employeeWithNames"
 import { Division } from "@/types/division"
 
@@ -68,9 +68,9 @@ export default function HomePage({ leaveRequests, employees, divisions }: { leav
     return filteredRequests.reduce(
       (acc, req) => {
         // FIXED: Use camelCase latestStatus
-        if (req.latestStatus === "Pending") acc.pending++
-        else if (req.latestStatus === "Approved") acc.approved++
-        else if (req.latestStatus === "Rejected") acc.rejected++
+        if (req.latestStatus === "รออนุมัติ") acc.pending++
+        else if (req.latestStatus === "อนุมัติ") acc.approved++
+        else if (req.latestStatus === "ปฏิเสธ") acc.rejected++
         acc.total++
         return acc
       },
@@ -79,17 +79,19 @@ export default function HomePage({ leaveRequests, employees, divisions }: { leav
   }, [filteredRequests])
 
   // --- Data for the Area Chart (FIXED) ---
+  // ใน HomePageCSR.tsx เฉพาะจุดแปลงวันที่
   const areaChartData = React.useMemo(() => {
     const countsByDate: Record<string, number> = {}
     for (const req of filteredRequests) {
-      // FIXED: req.startDate is a Date. Format it to 'YYYY-MM-DD'
-      const dateString = new Date(req.startDate).toLocaleDateString('en-CA') // 'en-CA' gives YYYY-MM-DD
+      const dateObj = req.startDate instanceof Date ? req.startDate : new Date(req.startDate as any);
+      const dateString = dateObj.toLocaleDateString('en-CA'); // YYYY-MM-DD
       countsByDate[dateString] = (countsByDate[dateString] || 0) + 1
     }
     return Object.entries(countsByDate)
       .map(([date, total]) => ({ date, total }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
   }, [filteredRequests])
+
 
   // --- FIXED: Data for the Bar Chart (Total by DIVISION) ---
   const divisionChartData = React.useMemo(() => {
@@ -124,14 +126,14 @@ export default function HomePage({ leaveRequests, employees, divisions }: { leav
       color: DIVISION_COLORS[divisions.length % DIVISION_COLORS.length],
     }
     return config
-  }, [divisions]) 
+  }, [divisions])
 
   // --- FIXED: Data for the Pie Chart (Approved by DIVISION) ---
   const approvedByDivData = React.useMemo(() => {
     const countsByDiv: Record<string, number> = {}
     for (const req of filteredRequests) {
       // FIXED: Use camelCase latestStatus
-      if (req.latestStatus !== 'Approved') continue
+      if (req.latestStatus !== 'อนุมัติ') continue
       // FIXED: Use camelCase employeeID
       const division = employeeDivMap.get(req.employeeID) || "Unknown"
       countsByDiv[division] = (countsByDiv[division] || 0) + 1
@@ -159,7 +161,7 @@ export default function HomePage({ leaveRequests, employees, divisions }: { leav
       count: total,
       fill: pieChartConfig[divName]?.color || "var(--chart-1)"
     }))
-  }, [employees, pieChartConfig]) 
+  }, [employees, pieChartConfig])
 
 
   return (
